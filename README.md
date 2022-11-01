@@ -1,1 +1,1 @@
-# Proyecto2-MusicPlayer
+# Proyecto 2 - MusicPlayer
