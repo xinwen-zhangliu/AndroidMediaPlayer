@@ -12,11 +12,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.view.View
-import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.proyecto2_reproductor_de_musica.adapter.MediaItemDataAdapter
+import com.proyecto2_reproductor_de_musica.models.MediaDataProvider
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_main_recycler.*
 import res.layout.*
 
 
@@ -28,9 +32,10 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.fragment_main_recycler)
 
-    
+        initRecyclerView()
+
         mp = MediaPlayer.create(this, R.raw.cage_the_elephant_trouble)
         mp.isLooping = true
         mp.setVolume(0.5f, 0.5f)
@@ -38,64 +43,68 @@ class MainActivity : AppCompatActivity() {
 
 
         isPermissionGranted()
-        getLabels()
+        //getLabels()
 
         // Volume Bar
-        volumeBar.setOnSeekBarChangeListener(
-            object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    //audioManager= getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                    if (fromUser) {
-                        var volumeNum :Float = progress / 100.0f
-                        mp.setVolume(volumeNum, volumeNum)
-                        //var newVolume : Int = volumeNum.toInt()
+//        volumeBar.setOnSeekBarChangeListener(
+//            object : SeekBar.OnSeekBarChangeListener {
+//                override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
+//                    //audioManager= getSystemService(Context.AUDIO_SERVICE) as AudioManager
+//                    if (fromUser) {
+//                        var volumeNum :Float = progress / 100.0f
+//                        mp.setVolume(volumeNum, volumeNum)
+//                        //var newVolume : Int = volumeNum.toInt()
+//
+//                        if (progress<0){
+//
+//                            //audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,newVolume,AudioManager.FLAG_PLAY_SOUND )
+//                        }else{
+//
+//                        }
+//                    }
+//                }
+//                override fun onStartTrackingTouch(p0: SeekBar?) {
+//                }
+//                override fun onStopTrackingTouch(p0: SeekBar?) {
+//                }
+//            }
+//        )
+//
+//        // Position Bar
+//        positionBar.max = totalTime
+//        positionBar.setOnSeekBarChangeListener(
+//            object : SeekBar.OnSeekBarChangeListener {
+//                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+//                    if (fromUser) {
+//                        mp.seekTo(progress)
+//                    }
+//                }
+//                override fun onStartTrackingTouch(p0: SeekBar?) {
+//                }
+//                override fun onStopTrackingTouch(p0: SeekBar?) {
+//                }
+//            }
+//        )
 
-                        if (progress<0){
-
-                            //audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,newVolume,AudioManager.FLAG_PLAY_SOUND )
-                        }else{
-
-                        }
-                    }
-                }
-                override fun onStartTrackingTouch(p0: SeekBar?) {
-                }
-                override fun onStopTrackingTouch(p0: SeekBar?) {
-                }
-            }
-        )
-
-        // Position Bar
-        positionBar.max = totalTime
-        positionBar.setOnSeekBarChangeListener(
-            object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    if (fromUser) {
-                        mp.seekTo(progress)
-                    }
-                }
-                override fun onStartTrackingTouch(p0: SeekBar?) {
-                }
-                override fun onStopTrackingTouch(p0: SeekBar?) {
-                }
-            }
-        )
-
-        // Thread
-        Thread(Runnable {
-            while (mp != null) {
-                try {
-                    var msg = Message()
-                    msg.what = mp.currentPosition
-                    handler.sendMessage(msg)
-                    Thread.sleep(1000)
-                } catch (e: InterruptedException) {
-                }
-            }
-        }).start()
+//        // Thread
+//        Thread(Runnable {
+//            while (mp != null) {
+//                try {
+//                    var msg = Message()
+//                    msg.what = mp.currentPosition
+//                    handler.sendMessage(msg)
+//                    Thread.sleep(1000)
+//                } catch (e: InterruptedException) {
+//                }
+//            }
+//        }).start()
     }
 
-
+    fun initRecyclerView(){
+        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = MediaItemDataAdapter(MediaDataProvider.fakeSongsList)
+    }
 
     @SuppressLint("HandlerLeak")
     var handler = object : Handler() {

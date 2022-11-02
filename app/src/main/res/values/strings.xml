@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Proyecto2-Reproductor_de_musica</string>
+    <string name="empty">Empty</string>
+    <string name="empty_text">Empty</string>
 </resources>

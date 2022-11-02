@@ -1,7 +1,6 @@
 package com.proyecto2_reproductor_de_musica.models
 
 
-import android.net.Uri
 import androidx.recyclerview.widget.DiffUtil
 
 
@@ -12,7 +11,7 @@ data class MediaItemData(
     val mediaId: String,
     val title: String,
     val subtitle: String,
-    val albumArtUri: Uri,
+    //val albumArtUri: Uri,
     val browsable: Boolean,
     var playbackRes: Int
 ) {
