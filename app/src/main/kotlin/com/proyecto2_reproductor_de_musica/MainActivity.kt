@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_main_recycler)
-
+        isPermissionGranted()
         initRecyclerView()
 
         mp = MediaPlayer.create(this, R.raw.cage_the_elephant_trouble)
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         totalTime = mp.duration
 
 
-        isPermissionGranted()
+
         //getLabels()
 
         // Volume Bar
@@ -123,21 +123,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     fun isPermissionGranted(): Boolean {
         return if (ActivityCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                android.Manifest.permission.ACCESS_MEDIA_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                android.Manifest.permission.ACCESS_MEDIA_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        )
+        {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
+                    android.Manifest.permission.MANAGE_EXTERNAL_STORAGE,
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                    android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
+                    android.Manifest.permission.ACCESS_MEDIA_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
                 ),
                 5
             )
