@@ -5,7 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.proyecto2_reproductor_de_musica.R
-import com.proyecto2_reproductor_de_musica.models.MediaItemData
+import com.proyecto2_reproductor_de_musica.data.MediaItemData
 
 
 class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){

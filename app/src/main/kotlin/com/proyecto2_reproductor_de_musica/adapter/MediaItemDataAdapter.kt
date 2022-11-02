@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.proyecto2_reproductor_de_musica.R
-import com.proyecto2_reproductor_de_musica.models.MediaItemData
+import com.proyecto2_reproductor_de_musica.data.MediaItemData
 
 class MediaItemDataAdapter (private val mediaLits : List<MediaItemData>) : RecyclerView.Adapter<MediaItemDataViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemDataViewHolder {

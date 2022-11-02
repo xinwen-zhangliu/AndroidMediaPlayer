@@ -1,7 +1,5 @@
 
-package com.proyecto2_reproductor_de_musica.models
-
-import android.net.Uri
+package com.proyecto2_reproductor_de_musica.data
 
 class MediaDataProvider {
     companion object{

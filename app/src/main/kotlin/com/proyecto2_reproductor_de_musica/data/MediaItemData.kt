@@ -1,4 +1,4 @@
-package com.proyecto2_reproductor_de_musica.models
+package com.proyecto2_reproductor_de_musica.data
 
 
 import androidx.recyclerview.widget.DiffUtil

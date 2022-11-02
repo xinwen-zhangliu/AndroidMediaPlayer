@@ -18,7 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.proyecto2_reproductor_de_musica.adapter.MediaItemDataAdapter
-import com.proyecto2_reproductor_de_musica.models.MediaDataProvider
+import com.proyecto2_reproductor_de_musica.data.MediaDataProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_main_recycler.*
 import res.layout.*
@@ -29,11 +29,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mp: MediaPlayer
     private var totalTime: Int = 0
     lateinit var audioManager: AudioManager
+
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_main_recycler)
-        isPermissionGranted()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            isPermissionGranted()
+        }
         initRecyclerView()
 
         mp = MediaPlayer.create(this, R.raw.cage_the_elephant_trouble)
@@ -138,9 +142,11 @@ class MainActivity : AppCompatActivity() {
                 this,
                 arrayOf(
                     android.Manifest.permission.MANAGE_EXTERNAL_STORAGE,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    //android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_MEDIA_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    //android.Manifest.permission.ACCESS_COARSE_LOCATION
                 ),
                 5
             )
