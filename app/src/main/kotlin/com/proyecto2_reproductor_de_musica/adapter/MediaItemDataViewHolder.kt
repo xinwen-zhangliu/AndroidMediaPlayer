@@ -17,6 +17,5 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
     fun render(media : MediaItemData){
         songTitle.text = media.title
         author.text = media.subtitle
-
     }
 }

@@ -19,9 +19,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.proyecto2_reproductor_de_musica.adapter.MediaItemDataAdapter
 import com.proyecto2_reproductor_de_musica.data.MediaDataProvider
+import com.proyecto2_reproductor_de_musica.data.MediaItemData
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_main_recycler.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import res.layout.*
+import android.os.Environment.DIRECTORY_MUSIC
+import 	android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,16 +43,15 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_main_recycler)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            isPermissionGranted()
+        if(isPermissionGranted()){
+            initRecyclerView()
+
         }
-        initRecyclerView()
 
         mp = MediaPlayer.create(this, R.raw.cage_the_elephant_trouble)
         mp.isLooping = true
         mp.setVolume(0.5f, 0.5f)
         totalTime = mp.duration
-
 
 
         //getLabels()
@@ -104,10 +111,62 @@ class MainActivity : AppCompatActivity() {
 //        }).start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     fun initRecyclerView(){
+
+
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = MediaItemDataAdapter(MediaDataProvider.fakeSongsList)
+        var shitList = ArrayList<MediaItemData>()
+        // musicPath[cursor.getPosition()]=cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+        //CoroutineScope(Dispatchers.IO).launch {
+        val collection =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                MediaStore.Audio.Media.getContentUri(
+                    MediaStore.VOLUME_EXTERNAL
+                )
+            } else {
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+            }
+        val projection = arrayOf(
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.DISPLAY_NAME,
+
+        )
+
+
+        var selection = MediaStore.Audio.Media.IS_MUSIC + "!=0"
+        var cursor =  contentResolver.query(
+            collection,
+            projection,
+            selection,
+            null,
+            null
+        )
+
+
+        if(cursor!=null){
+            if(cursor.moveToFirst())
+            do{
+                var url = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA))
+                var author = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST))
+                var title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME))
+                shitList.add(
+                    MediaItemData(
+                    url,
+                    title,
+                    author,
+                    )
+                )
+            }while(cursor.moveToNext())
+            cursor.close()
+        }
+        var size = shitList.size
+        Log.i("shit list size",size.toString() )
+        recyclerView.adapter= MediaItemDataAdapter(shitList)
+
+
     }
 
     @SuppressLint("HandlerLeak")
@@ -131,24 +190,25 @@ class MainActivity : AppCompatActivity() {
     fun isPermissionGranted(): Boolean {
         return if (ActivityCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.ACCESS_MEDIA_LOCATION
+                android.Manifest.permission.READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.ACCESS_MEDIA_LOCATION
+                android.Manifest.permission.READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         )
         {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
-                    android.Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                    //android.Manifest.permission.MANAGE_EXTERNAL_STORAGE,
                     //android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_MEDIA_LOCATION,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    android.Manifest.permission.INTERNET
                     //android.Manifest.permission.ACCESS_COARSE_LOCATION
                 ),
-                5
+                111
             )
             false
         } else {
@@ -203,6 +263,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 
     fun playBtnClick(v: View) {
 
