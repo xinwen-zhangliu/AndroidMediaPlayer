@@ -2,4 +2,6 @@
     <string name="app_name">Proyecto2-Reproductor_de_musica</string>
     <string name="empty">Empty</string>
     <string name="empty_text">Empty</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

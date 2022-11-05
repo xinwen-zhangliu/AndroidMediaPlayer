@@ -1,12 +1,21 @@
 package com.proyecto2_reproductor_de_musica.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.proyecto2_reproductor_de_musica.R
-import com.proyecto2_reproductor_de_musica.data.MediaItemData
+import com.proyecto2_reproductor_de_musica.data.models.MediaItemData
+import com.proyecto2_reproductor_de_musica.fragments.playing.PlayingFragment
 
-class MediaItemDataAdapter (private val mediaLits : List<MediaItemData>) : RecyclerView.Adapter<MediaItemDataViewHolder>(){
+/**
+ * Adapter for displaying the items in the Recycler View
+ */
+class MediaItemDataAdapter (private var mediaList : List<MediaItemData>) : RecyclerView.Adapter<MediaItemDataViewHolder>(){
+
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemDataViewHolder {
 
         val layoutInflater = LayoutInflater.from(parent.context )
@@ -15,14 +24,39 @@ class MediaItemDataAdapter (private val mediaLits : List<MediaItemData>) : Recyc
 
     }
 
-    override fun onBindViewHolder(holder: MediaItemDataViewHolder, position: Int) {
-        val item = mediaLits[position]
+    override fun onBindViewHolder(
+        holder: MediaItemDataViewHolder,
+        position: Int
+    ) {
+        val item = mediaList[position]
         holder.render(item)
+
+
+        var title = holder.songTitle.toString()
+        var subtitle = holder.author.toString()
+
+        holder.itemView.setOnClickListener(object : View.OnClickListener{
+
+            override fun onClick(v: View?) {
+
+                    val activity = v!!.context as AppCompatActivity
+                    val playingFragment =  PlayingFragment.newInstance(title , subtitle)
+                    activity.supportFragmentManager.beginTransaction().replace(R.id.mainActivity, playingFragment).addToBackStack(null).commit()
+
+
+            }
+        })
     }
 
     override fun getItemCount(): Int {
-
-        return mediaLits.size
+        return mediaList.size
     }
+    fun setNewData(list : List<MediaItemData>){
+        mediaList = list
+        notifyDataSetChanged()
+
+    }
+
+
 
 }

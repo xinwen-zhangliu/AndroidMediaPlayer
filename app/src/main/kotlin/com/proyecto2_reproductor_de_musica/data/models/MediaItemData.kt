@@ -1,17 +1,25 @@
-package com.proyecto2_reproductor_de_musica.data
+package com.proyecto2_reproductor_de_musica.data.models
+
+import com.proyecto2_reproductor_de_musica.data.db.entities.SongEntity
 
 
 /**
  * Data class to encapsulate properties of a Media Item which are the songs
  */
 data class MediaItemData(
-    val mediaId: String,
+    val mediaId: Int,
     val title: String,
-    val subtitle: String,
+    val author: String,
+    val path: String,
     //val albumArtUri: Uri,
     //val browsable: Boolean,
    // var playbackRes: Int
 )
+
+/**
+ * Maps SongEntity to MediaItemData
+ */
+fun SongEntity.toDomain() = MediaItemData(mediaId = id,title = title, author = performer , path = path)
 //{
 //
 //    companion object {
