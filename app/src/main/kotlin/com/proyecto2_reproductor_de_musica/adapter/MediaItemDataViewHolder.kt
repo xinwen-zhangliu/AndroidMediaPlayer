@@ -15,6 +15,7 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
     val songTitle = view.findViewById<TextView>(R.id.title)
     val author = view.findViewById<TextView>(R.id.text)
     val image = view.findViewById<ImageView>(R.id.image)
+    var path :String = ""
 
     /**
      * Puts respective item data from MediaItemData into the elements in view
@@ -22,6 +23,7 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
     fun render(media : MediaItemData){
         songTitle.text = media.title
         author.text = media.title
+        this.path= media.path
 
     }
 

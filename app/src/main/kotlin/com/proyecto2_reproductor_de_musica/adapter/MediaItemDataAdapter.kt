@@ -32,15 +32,16 @@ class MediaItemDataAdapter (private var mediaList : List<MediaItemData>) : Recyc
         holder.render(item)
 
 
-        var title = holder.songTitle.toString()
-        var subtitle = holder.author.toString()
+        val title = holder.songTitle.toString()
+        val subtitle = holder.author.toString()
+        val path = holder.path.toString()
 
         holder.itemView.setOnClickListener(object : View.OnClickListener{
 
             override fun onClick(v: View?) {
 
                     val activity = v!!.context as AppCompatActivity
-                    val playingFragment =  PlayingFragment.newInstance(title , subtitle)
+                    val playingFragment =  PlayingFragment.newInstance(title , subtitle, path)
                     activity.supportFragmentManager.beginTransaction().replace(R.id.mainActivity, playingFragment).addToBackStack(null).commit()
 
 

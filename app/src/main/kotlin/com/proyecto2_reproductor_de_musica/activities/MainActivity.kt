@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                 this,
                 arrayOf(
                     //android.Manifest.permission.MANAGE_EXTERNAL_STORAGE,
-                    android.Manifest.permission.ACCESS_MEDIA_LOCATION,
+                    //android.Manifest.permission.ACCESS_MEDIA_LOCATION,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE,
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
 

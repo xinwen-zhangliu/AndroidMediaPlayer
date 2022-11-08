@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_listFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_editFragment"
+            app:destination="@id/editFragment" />
     </fragment>
     <fragment
         android:id="@+id/playingFragment"
@@ -29,5 +32,6 @@
     <fragment
         android:id="@+id/editFragment"
         android:name="com.proyecto2_reproductor_de_musica.fragments.edit.EditFragment"
-        android:label="EditFragment" />
+        android:label="fragment_edit"
+        tools:layout="@layout/fragment_edit" />
 </navigation>

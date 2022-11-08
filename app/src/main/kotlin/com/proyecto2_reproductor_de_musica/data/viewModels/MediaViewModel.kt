@@ -51,10 +51,12 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
     }
 
-    fun addSongs(songs: List<SongEntity>){
+    fun addToDatabse(songs: List<SongEntity>, albums : List<AlbumsEntity>, performers : List<PerformerEntity>){
         viewModelScope.launch (Dispatchers.IO){
-
+            repository.insertPerformers(performers)
+            repository.insertAlbums(albums)
             repository.insertMedia(songs)
+
         }
     }
 
@@ -73,7 +75,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
     }
 
     fun getMediaFromFiles(){
-        //viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch (Dispatchers.IO){
             val collection =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     MediaStore.Audio.Media.getContentUri(
@@ -103,59 +105,49 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
                     do{
                         var url = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA))
                         if(!url.isNullOrEmpty()){
+
                             try {
                                 var file = File(url)
                                 var uri= Uri.fromFile(file)
                                 mmr.setDataSource(getApplication(), uri)
-                                //get album
-                                //get performer
-                                //get song
-                                //add it all to the databse in that order
                             }catch (e : Exception){
-
+                                continue
                             }
+
                         }
-                        var author = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST))
-                        var title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME))
-                        if(author==null){
-                            author= "unknown"
-                        }
-                        if(title==null){
+                        var title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toString()
+                        if(title.isEmpty())
                             title =  cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME))
-                        }
-                        MediaDataProvider.songsList.add(
-                            SongEntity(
-                                0,
-                                0,
-                                0,
-                                url,
-                                title,
-                                0,
-                                0,
-                                "unknown"
-                            )
-                        )
+                        var artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toString()
+                        if(artist.isEmpty())
+                            artist = "unknown"
+                        var track:Int = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)?.toInt()?: 0
+                        var year : Int = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)?.toInt()?: 0
+                        var genre = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE).toString()
+                        if(genre.isEmpty())
+                            genre = "unknown"
+                        var albumPath = url.subSequence(0, url.lastIndexOf('/'))
+                        var album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).toString()
+                        if(album.isEmpty())
+                            album = "unknown"
+
+
+                        var songEntity: SongEntity = SongEntity(0, 0, 0, url, title, track, year, genre)
+                        var performerEntity: PerformerEntity = PerformerEntity(0,2, artist)
+                        var albumsEntity: AlbumsEntity = AlbumsEntity(0,albumPath.toString(),album, year)
+
+                        MediaDataProvider.songsList.add(songEntity)
+                        MediaDataProvider.albumList.add(albumsEntity)
+                        MediaDataProvider.performerList.add(performerEntity)
 
                     }while(cursor.moveToNext())
                 cursor.close()
             }
-        //}
-        //addSongs(MediaDataProvider.songsList)
+        }
+
+        addToDatabse(MediaDataProvider.songsList, MediaDataProvider.albumList, MediaDataProvider.performerList)
+
     }
 }
 
-fun getSongEntity(mmr : MediaMetadataRetriever) : SongEntity{
-    return SongEntity(0, 0, 0,"", "", 0, 0, "")
-}
-
-fun getAlbumEntity(mmr : MediaMetadataRetriever) : AlbumsEntity{
-    return AlbumsEntity(0, "", "", 0)
-}
-
-
-fun getPerformerEntity(mmr : MediaMetadataRetriever) : PerformerEntity{
-    return PerformerEntity(0,0,"")
-}
-
-//Todo: read metadata frmo cursor instead of using cursor
 
