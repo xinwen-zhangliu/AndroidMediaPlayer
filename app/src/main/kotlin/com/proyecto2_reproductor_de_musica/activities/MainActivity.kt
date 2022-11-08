@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         }
         mediaViewModel = ViewModelProvider(this).get(MediaViewModel::class.java)
 
+         mediaViewModel
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -93,7 +94,6 @@ class MainActivity : AppCompatActivity() {
 //    @RequiresApi(Build.VERSION_CODES.P)
 //    fun getLabels(){
 //        val mmr = MediaMetadataRetriever()
-//
 //
 //
 //        try {

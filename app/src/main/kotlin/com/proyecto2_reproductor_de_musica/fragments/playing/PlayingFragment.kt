@@ -1,11 +1,15 @@
 package com.proyecto2_reproductor_de_musica.fragments.playing
 
+import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.proyecto2_reproductor_de_musica.R
@@ -31,25 +35,32 @@ class PlayingFragment : Fragment() {
     private var path: String? = null
 
 
+    val volumeBar = view?.findViewById<SeekBar>(R.id.volumeBar)
+    val positionBar = view?.findViewById<SeekBar>(R.id.positionBar)
+    val playBtn = view?.findViewById<Button>(R.id.playBtn)
+    val elapsedTimeLabel = view?.findViewById<TextView>(R.id.elapsedTimeLabel)
+    val remainingTimeLabel = view?.findViewById<TextView>(R.id.remainingTimeLabel)
+
+
     private lateinit var mp: MediaPlayer
     private var totalTime: Int = 0
 
-    //    @SuppressLint("HandlerLeak")
-//    var handler = object : Handler() {
-//        override fun handleMessage(msg: Message) {
-//            var currentPosition = msg.what
-//
-//            // Update positionBar
-//            positionBar.progress = currentPosition
-//
-//            // Update Labels
-//            var elapsedTime = createTimeLabel(currentPosition)
-//            elapsedTimeLabel.text = elapsedTime
-//
-//            var remainingTime = createTimeLabel(totalTime - currentPosition)
-//            remainingTimeLabel.text = "-$remainingTime"
-//        }
-//    }
+        @SuppressLint("HandlerLeak")
+    var handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            var currentPosition = msg.what
+
+            // Update positionBar
+            positionBar!!.progress = currentPosition
+
+            // Update Labels
+            var elapsedTime = createTimeLabel(currentPosition)
+            elapsedTimeLabel!!.text = elapsedTime
+
+            var remainingTime = createTimeLabel(totalTime - currentPosition)
+            remainingTimeLabel!!.text = "-$remainingTime"
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,60 +87,86 @@ class PlayingFragment : Fragment() {
         mp.setVolume(0.5f, 0.5f)
         totalTime = mp.duration
 
+        playBtn!!.setOnClickListener(
+            View.OnClickListener {
+                @Override
+                fun OnClick(view: View?){
+                    if (mp.isPlaying) {
+                        // Stop
+                        mp.pause()
+                        view!!.findViewById<Button>(R.id.playBtn).setBackgroundResource(R.drawable.play)
 
-        // Volume Bar
-//        volumeBar.setOnSeekBarChangeListener(
-//            object : SeekBar.OnSeekBarChangeListener {
-//                override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
-//                    //audioManager= getSystemService(Context.AUDIO_SERVICE) as AudioManager
-//                    if (fromUser) {
-//                        var volumeNum :Float = progress / 100.0f
-//                        mp.setVolume(volumeNum, volumeNum)
-//                        //var newVolume : Int = volumeNum.toInt()
-//
-//                        if (progress<0){
-//
-//                            //audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,newVolume,AudioManager.FLAG_PLAY_SOUND )
-//                        }else{
-//
-//                        }
-//                    }
-//                }
-//                override fun onStartTrackingTouch(p0: SeekBar?) {
-//                }
-//                override fun onStopTrackingTouch(p0: SeekBar?) {
-//                }
-//            }
-//        )
-//
-//        // Position Bar
-//        positionBar.max = totalTime
-//        positionBar.setOnSeekBarChangeListener(
-//            object : SeekBar.OnSeekBarChangeListener {
-//                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-//                    if (fromUser) {
-//                        mp.seekTo(progress)
-//                    }
-//                }
-//                override fun onStartTrackingTouch(p0: SeekBar?) {
-//                }
-//                override fun onStopTrackingTouch(p0: SeekBar?) {
-//                }
-//            }
-//        )
+                    } else {
+                        // Start
+                        mp.start()
+                        view!!.findViewById<Button>(R.id.playBtn).setBackgroundResource(R.drawable.stop)
+                    }
+                }
+            }
+        )
 
-//        // Thread
-//        Thread(Runnable {
-//            while (mp != null) {
-//                try {
-//                    var msg = Message()
-//                    msg.what = mp.currentPosition
-//                    handler.sendMessage(msg)
-//                    Thread.sleep(1000)
-//                } catch (e: InterruptedException) {
-//                }
-//            }
-//        }).start()
+
+
+
+
+
+         //Volume Bar
+        volumeBar!!.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    //audioManager= getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                    if (fromUser) {
+                        var volumeNum :Float = progress / 100.0f
+                        mp.setVolume(volumeNum, volumeNum)
+                        //var newVolume : Int = volumeNum.toInt()
+
+                        if (progress<0){
+
+                            //audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,newVolume,AudioManager.FLAG_PLAY_SOUND )
+                        }else{
+
+                        }
+                    }
+                }
+                override fun onStartTrackingTouch(p0: SeekBar?) {
+                }
+                override fun onStopTrackingTouch(p0: SeekBar?) {
+                }
+            }
+        )
+
+        // Position Bar
+        positionBar!!.max = totalTime
+        positionBar!!.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    if (fromUser) {
+                        mp.seekTo(progress)
+                    }
+                }
+
+                override fun onStartTrackingTouch(p0: SeekBar?) {
+                }
+
+                override fun onStopTrackingTouch(p0: SeekBar?) {
+                }
+            }
+        )
+
+
+
+        // Thread
+        Thread(Runnable {
+            while (mp != null) {
+                try {
+                    var msg = Message()
+                    msg.what = mp.currentPosition
+                    handler.sendMessage(msg)
+                    Thread.sleep(1000)
+                } catch (e: InterruptedException) {
+                }
+            }
+        }).start()
 
         return view
     }
@@ -144,19 +181,7 @@ class PlayingFragment : Fragment() {
 
         return timeLabel
     }
-    fun playBtnClick(v: View) {
 
-    if (mp.isPlaying) {
-        // Stop
-        mp.pause()
-        view!!.findViewById<Button>(R.id.playBtn).setBackgroundResource(R.drawable.play)
-
-    } else {
-        // Start
-        mp.start()
-        view!!.findViewById<Button>(R.id.playBtn).setBackgroundResource(R.drawable.stop)
-    }
-}
 
     companion object {
         /**
@@ -180,4 +205,14 @@ class PlayingFragment : Fragment() {
                 }
             }
     }
+
+
+
+
+
+}
+
+private fun Button.setOnClickListener(view: View?) {
+    var playBtn = view!!.findViewById<Button>(R.id.playBtn)
+
 }

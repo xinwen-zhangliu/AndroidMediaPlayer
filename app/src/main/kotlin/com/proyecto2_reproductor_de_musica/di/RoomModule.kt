@@ -11,9 +11,6 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 
-//Todo: ask about dependency injection,
-
-
 @InstallIn(SingletonComponent::class)
 @Module
 object RoomModule {
@@ -23,10 +20,8 @@ object RoomModule {
     fun provideRoom(@ApplicationContext context: Context) = Room.databaseBuilder(context,MediaDatabase::class.java,
         MEDIA_DATABASE_NAME )
 
-
-
     @Singleton
     @Provides
-    fun provideSongDao(db:MediaDatabase)= db.getSongDao()
+    fun provideSongDao(db:MediaDatabase)= db.getGeneralDao()
 
 }

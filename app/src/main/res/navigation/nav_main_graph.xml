@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_listFragment_to_playingFragment"
             app:destination="@id/playingFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/playingFragment"
@@ -20,7 +23,11 @@
         tools:layout="@layout/fragment_playing" />
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.proyecto2_reproductor_de_musica.SearchFragment"
+        android:name="com.proyecto2_reproductor_de_musica.fragments.search.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/editFragment"
+        android:name="com.proyecto2_reproductor_de_musica.fragments.edit.EditFragment"
+        android:label="EditFragment" />
 </navigation>
