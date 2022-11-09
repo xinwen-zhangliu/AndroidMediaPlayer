@@ -24,7 +24,7 @@ interface GeneralDao {
 
 
     //Types
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTypes(types: List<TypesEntity>)
 
     @Query("SELECT * FROM types_table")
@@ -41,11 +41,39 @@ interface GeneralDao {
     @JvmSuppressWildcards
     suspend fun insertAllAlbums(albumsToInsert:List<AlbumsEntity> )
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertOneAlbum(album : AlbumsEntity) : Long
+
+    @Query("SELECT MAX(id_album) FROM albums_table")
+    suspend fun getLastIdAlbum():Int
+
+    @Query("SELECT * FROM albums_table WHERE name =:nameSearch LIMIT 1")
+    suspend fun searchAlbumByName(nameSearch : String) : AlbumsEntity
+
+    @Query("SELECT * FROM albums_table WHERE id_album =:idToSearch LIMIT 1")
+    suspend fun getAlbumById(idToSearch:Int): AlbumsEntity
+
+    @Query("SELECT * FROM albums_table WHERE rowid =:rowId  LIMIT 1")
+    suspend fun albumFromRow(rowId: Int) : AlbumsEntity
+
+
 
     //Performers
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     @JvmSuppressWildcards
     suspend fun insertAllPerformers(performersToInsert:List<PerformerEntity> )
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertOnePerformer(performer : PerformerEntity) : Long
+
+    @Query("SELECT MAX(id_performer) FROM performer_table")
+    suspend fun getLastIdPerformer():Int
+
+    @Query("SELECT * FROM performer_table WHERE id_performer =:idToSearch LIMIT 1")
+    suspend fun getPerformerById(idToSearch:Int): PerformerEntity
+
+    @Query("SELECT * FROM performer_table WHERE rowid =:rowId LIMIT 1")
+    suspend fun performerFromRow(rowId: Int) : PerformerEntity
 
 
 }

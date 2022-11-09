@@ -2,6 +2,7 @@ package com.proyecto2_reproductor_de_musica.data.db.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "performer_table",
@@ -11,7 +12,8 @@ import androidx.room.PrimaryKey
         childColumns = ["id_type"],
         onUpdate = ForeignKey.CASCADE,
         onDelete = ForeignKey.CASCADE
-    )]
+    )],
+    indices = [Index(value = ["name"], unique = true)]
 )
 data class PerformerEntity(
     @PrimaryKey(autoGenerate = true) val id_performer:Int,

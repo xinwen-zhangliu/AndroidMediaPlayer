@@ -13,8 +13,6 @@ import com.proyecto2_reproductor_de_musica.data.db.entities.relationships.withSo
 interface SongDao {
 
     //Todo: searches "search?:fields:keys"
-
-
     //:genre:pop  :person:shakira
     //join of pop songs with the author shakira
 

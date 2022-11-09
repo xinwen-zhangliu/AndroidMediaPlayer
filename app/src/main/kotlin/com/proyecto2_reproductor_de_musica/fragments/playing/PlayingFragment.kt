@@ -44,6 +44,8 @@ class PlayingFragment : Fragment(){
     val remainingTimeLabel = view?.findViewById<TextView>(R.id.remainingTimeLabel)
 
 
+
+
     private lateinit var mp: MediaPlayer
     private var totalTime: Int = 0
 

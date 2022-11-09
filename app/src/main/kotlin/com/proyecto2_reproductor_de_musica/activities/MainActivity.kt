@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.data.viewModels.MediaViewModel
-import com.proyecto2_reproductor_de_musica.fragments.list.ListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import res.layout.*
 
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-        var fragment =  ListFragment()
+        //var fragment =  ListFragment()
 
     }
 

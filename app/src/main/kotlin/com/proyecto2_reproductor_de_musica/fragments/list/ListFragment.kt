@@ -37,6 +37,7 @@ class ListFragment : Fragment() {
         mediaViewModel = ViewModelProvider(this).get(MediaViewModel::class.java)
         if(mediaViewModel.readAllData.getValue().isNullOrEmpty()){
             mediaViewModel.getMediaFromFiles()
+            //Todo: see if types get added to database.
             Toast.makeText(this.context, " There is nothing in the database so we are reading ", 1).show()
         }
 
@@ -48,7 +49,7 @@ class ListFragment : Fragment() {
     }
 
     fun displayMedia(view :View ){
-
+        Toast.makeText(this.context, "Displaying media ", 1).show()
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val newSongList = MediaDataProvider.songsList.map { it.toDomain() }
