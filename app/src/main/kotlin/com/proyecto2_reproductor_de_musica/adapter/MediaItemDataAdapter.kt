@@ -1,8 +1,11 @@
 package com.proyecto2_reproductor_de_musica.adapter
 
+import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.proyecto2_reproductor_de_musica.R
@@ -24,6 +27,7 @@ class MediaItemDataAdapter (private var mediaList : List<MediaItemData>) : Recyc
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onBindViewHolder(
         holder: MediaItemDataViewHolder,
         position: Int
@@ -31,14 +35,18 @@ class MediaItemDataAdapter (private var mediaList : List<MediaItemData>) : Recyc
         val item = mediaList[position]
         holder.render(item)
 
-
-        val title = holder.songTitle.toString()
-        val subtitle = holder.author.toString()
-        val path = holder.path.toString()
-
         holder.itemView.setOnClickListener(object : View.OnClickListener{
 
             override fun onClick(v: View?) {
+
+                //Todo: set audio as playing when entering the playing view
+                //Todo: check if path is different than befores so we can start palying new song in service
+
+
+                val title = holder.songTitle.toString()
+                val subtitle = holder.author.toString()
+                val path = holder.path
+                Log.d("x", "item clicked" + title + path)
 
                     val activity = v!!.context as AppCompatActivity
                     val playingFragment =  PlayingFragment.newInstance(title , subtitle, path)

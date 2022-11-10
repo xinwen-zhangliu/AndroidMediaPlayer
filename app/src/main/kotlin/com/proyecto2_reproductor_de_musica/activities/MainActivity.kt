@@ -5,13 +5,16 @@ import android.R.layout.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.proyecto2_reproductor_de_musica.R
+import com.proyecto2_reproductor_de_musica.data.PlayingLiveData
 import com.proyecto2_reproductor_de_musica.data.viewModels.MediaViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import res.layout.*
@@ -21,6 +24,7 @@ import res.layout.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit  var mediaViewModel : MediaViewModel
+    lateinit var navController: NavController
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,12 +33,24 @@ class MainActivity : AppCompatActivity() {
         }
         mediaViewModel = ViewModelProvider(this).get(MediaViewModel::class.java)
 
-         mediaViewModel
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val navHostFragment =
-//            supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment?
+        //setContentView(binding.root)
+
+         //navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment)!!
+
+        var liveData = PlayingLiveData()
+        try {
+            liveData
+            //liveData.navListFragmentInstance = (navHostFragment.childFragmentManager.findFragmentById(R.layout.fragment_list) as PlayingFragment?)!!
+
+        }catch (e : Exception){
+            Log.d("m", "exception on main activity")
+        }
+
+
 //
 //        if (navHostFragment != null) {
 //            val navController = navHostFragment.navController
@@ -44,6 +60,8 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
+
+
         //var fragment =  ListFragment()
 
     }
@@ -51,8 +69,13 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    fun getListFragmentInstance(){
+        return
+    }
+
+
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.fragment)
+        navController = findNavController(R.id.fragment)
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
@@ -90,41 +113,5 @@ class MainActivity : AppCompatActivity() {
 
 
 
-//    @RequiresApi(Build.VERSION_CODES.P)
-//    fun getLabels(){
-//        val mmr = MediaMetadataRetriever()
-//
-//
-//        try {
-//
-//            mmr.setDataSource(this, Uri.parse("android.resource://"+getPackageName()+"/raw/cage_the_elephant_trouble"))
-//
-//            //mmr.setDataSource(this, uri)
-//        }catch (e : IllegalArgumentException){
-//            //title = "error"
-//        }
-//        var artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-//        var title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-//        songTitle.text = title
-//        author.text = artist
-//        var hasImage = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_COUNT)?.toInt()?:-1
-//        if(hasImage>0  ){
-//            var imageAtIndex:Int =
-//                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_PRIMARY)?.toInt() ?:-1
-//            //if(imageAtIndex!=-1)
-//                songImage.setImageBitmap(mmr.getImageAtIndex(imageAtIndex) )
-//
-//        }
-//
-//        val artBytes = mmr.embeddedPicture
-//        if (artBytes != null) {
-//            val bm = BitmapFactory.decodeByteArray(artBytes, 0, artBytes.size)
-//            songImage.setImageBitmap(bm)
-//        }
-//
-//    }
-//
-//
 
-//
 }

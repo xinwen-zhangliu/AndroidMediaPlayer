@@ -5,11 +5,13 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.proyecto2_reproductor_de_musica.MusicPlayerApp
+import com.proyecto2_reproductor_de_musica.data.PlayingLiveData
 import com.proyecto2_reproductor_de_musica.data.db.MediaDatabase
 import com.proyecto2_reproductor_de_musica.data.db.dao.GeneralDao
 import com.proyecto2_reproductor_de_musica.data.db.dao.RawDao
@@ -18,9 +20,11 @@ import com.proyecto2_reproductor_de_musica.data.db.entities.AlbumsEntity
 import com.proyecto2_reproductor_de_musica.data.db.entities.PerformerEntity
 import com.proyecto2_reproductor_de_musica.data.db.entities.SongEntity
 import com.proyecto2_reproductor_de_musica.data.db.entities.TypesEntity
+import com.proyecto2_reproductor_de_musica.data.models.MediaDataProvider
 import com.proyecto2_reproductor_de_musica.data.repositories.MediaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 
@@ -33,11 +37,12 @@ import java.io.File
  */
 class MediaViewModel(application : Application): AndroidViewModel(application) {
     val readAllData : LiveData<List<SongEntity>>
+
     private val repository : MediaRepository
     private val  mmr : MediaMetadataRetriever = MediaMetadataRetriever()
-    lateinit var generalDao : GeneralDao
-    lateinit var rawDao: RawDao
-    lateinit var relationsDao: RelationsDao
+     var generalDao : GeneralDao
+     var rawDao: RawDao
+     var relationsDao: RelationsDao
 
     /**
      * First executed when viewModel is called
@@ -56,6 +61,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
         readAllData = repository.getAllMediaFromDatabase
 
     }
+
 
     fun addToDatabse(songs: List<SongEntity>, albums : List<AlbumsEntity>, performers : List<PerformerEntity>){
         viewModelScope.launch (Dispatchers.IO){
@@ -83,6 +89,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
     fun getMediaFromFiles(){
         viewModelScope.launch (Dispatchers.IO){
+
             //Toast.makeText(getApplication(), "Getting Media From Files", Toast.LENGTH_SHORT ).show()
             val collection =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -96,7 +103,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
             val internalCollection = MediaStore.Audio.Media.INTERNAL_CONTENT_URI
 
-           var collectionList =  listOf<Uri>(collection!!, internalCollection!!)
+           var collectionList =  listOf<Uri>(collection, internalCollection)
 
 
             val projection = arrayOf(
@@ -108,7 +115,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
             var selection = MediaStore.Audio.Media.IS_MUSIC + "!=0"
 
-            //for(uri in collectionList){
+            for(uri in collectionList){
                 var cursor = getApplication<MusicPlayerApp>().contentResolver.query(
                     collection,
                     projection,
@@ -135,7 +142,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
                                 }
 
                             }
-                            var title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toString()
+                            var title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).toString()
                             if(title.isEmpty())
                                 title =  cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME))
                             var artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toString()
@@ -160,33 +167,61 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
                             generalDao.insertOneAlbum(albumsEntity)
                             generalDao.insertOnePerformer(performerEntity)
+
+//                            var idlist = generalDao.getLastAlbumId()
+//                            if(idlist.isNullOrEmpty()){
+//                                Log.d("ViewModel", "the fucking list is empty ")
+//                                toastStuff("the fucking list is empty", 0)
+//                            }
+//                            Log.d("x", "the id of last album$idlist")
+                           // var lastAlbum = generalDao.getLastAlbumId().first().toInt()
+                            //toastStuff("last album id:" , lastAlbum)
+                           // val lastPerformer = generalDao.getLastPerformerId().first().toInt()
+                           // toastStuff("last performer id:" , lastPerformer)
                             //var lastAlbumId = generalDao.getLastIdAlbum()
                             //var lastPerformerId = generalDao.getLastIdPerformer()
 //                            var lastAlbumId = generalDao.insertOneAlbum(albumsEntity)
 //                            var lastPerformerId =generalDao.insertOnePerformer(performerEntity)
+//                            Log.d("x", "the last rowid of album $lastAlbumId")
+//                            Log.d("x", "the last rowid of performer $lastPerformerId")
+                            var albumId = generalDao.getAlbumFromName(album).first().id_album
+                            var lastPerformerId =generalDao.getPerformerFromName(artist).first().id_performer
+                            Log.d("x", "the lastid of album " +album + " : " + albumId)
+                            Log.d("x", "the lastid of performer " +artist + " : " + lastPerformerId)
+
+//                            var lastAddedAlbum = generalDao.albumFromRow(lastAlbumId.toInt()).id_album
+//                            var lastAddedPerformer = generalDao.getPerformerById(lastPerformerId.toInt()).id_performer
+//                            Log.d("x", "the lastid of album " +lastAddedAlbum)
+//                            Log.d("x", "the lastid of performer " +lastAddedPerformer)
 
 
-//                            var lastAddedAlbum = generalDao.albumFromRow(lastAlbumId.toInt())
-//                            var lastAddedPerformer = generalDao.getPerformerById(lastPerformerId.toInt())
-//
-//
-//
-//
-//                            var songEntity: SongEntity = SongEntity(0, lastAddedPerformer.id_performer, lastAddedAlbum.id_album, url, title, track, year, genre)
-//                            MediaDataProvider.songsList.add(songEntity)
+                            var songEntity: SongEntity = SongEntity(0, lastPerformerId, albumId, url, title, track, year, genre)
+                            MediaDataProvider.songsList.add(songEntity)
 
 
 
                         }while(cursor.moveToNext())
                     cursor.close()
-                }
-            //}
+                    repository.insertMedia(MediaDataProvider.songsList)
 
+                }
+
+            }
+
+            withContext(Dispatchers.Main){
+                Log.d("x", "Finished reading files, setting livedata as true")
+                var liveData = PlayingLiveData()
+                liveData.finished.postValue(true)
+            }
+            //end of corrutine scope
         }
+
 
         //addToDatabse(MediaDataProvider.songsList, MediaDataProvider.albumList, MediaDataProvider.performerList)
 
     }
+    fun toastStuff(text: String,number : Int){
+        Toast.makeText(getApplication(), text + number, Toast.LENGTH_SHORT ).show()
+    }
 }
-
 

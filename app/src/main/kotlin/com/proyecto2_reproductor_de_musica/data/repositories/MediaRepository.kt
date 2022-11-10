@@ -9,12 +9,6 @@ import com.proyecto2_reproductor_de_musica.data.db.entities.PerformerEntity
 import com.proyecto2_reproductor_de_musica.data.db.entities.SongEntity
 
 
-//QuoteModel : From the dagger hilt and isign api?
-//QuoteProvider : just a companion object to store the list of quotes
-//QuoteService :
-
-
-//Todo: check dependency injection
 /**
  * For access to multiple data sources. Best practice for code separation and architecture
  */
@@ -23,6 +17,9 @@ class MediaRepository(
     private val rawDao: RawDao,
     private val relationsDao: RelationsDao
 ){
+    /**
+     * Function to get all the songs in database, returns as livedata
+     */
     val getAllMediaFromDatabase : LiveData<List<SongEntity>> = generalDao.getAllSongs()
 
     /**
@@ -30,10 +27,12 @@ class MediaRepository(
      * This function will use corutines in the ViewModel
      */
     suspend fun insertMedia(media:List<SongEntity>){
-        generalDao.insertAllSongs(media)
+        if(media.isNotEmpty())
+            generalDao.insertAllSongs(media)
     }
 
     suspend fun insertAlbums(albums: List<AlbumsEntity>){
+
         generalDao.insertAllAlbums(albums)
     }
 

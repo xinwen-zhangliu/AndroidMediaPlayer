@@ -10,7 +10,7 @@ import com.proyecto2_reproductor_de_musica.data.db.entities.TypesEntity
 @Dao
 interface GeneralDao {
     //Song
-    @Query("SELECT * FROM rolas_table ORDER BY id_rola DESC")
+    @Query("SELECT * FROM rolas_table")
     fun getAllSongs(): LiveData<List<SongEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -57,6 +57,12 @@ interface GeneralDao {
     suspend fun albumFromRow(rowId: Int) : AlbumsEntity
 
 
+    @Query("SELECT id_album FROM albums_table ORDER BY id_album DESC LIMIT 1")
+    fun getLastAlbumId(): List<Long>
+
+    @Query("SELECT * FROM albums_table WHERE name =:name LIMIT 1")
+    suspend fun getAlbumFromName(name : String) : List<AlbumsEntity>
+
 
     //Performers
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -74,6 +80,13 @@ interface GeneralDao {
 
     @Query("SELECT * FROM performer_table WHERE rowid =:rowId LIMIT 1")
     suspend fun performerFromRow(rowId: Int) : PerformerEntity
+
+    @Query("SELECT id_performer FROM performer_table ORDER BY id_performer DESC LIMIT 1")
+    fun getLastPerformerId(): List<Long>
+
+    @Query("SELECT * FROM performer_table WHERE name =:name LIMIT 1")
+    suspend fun getPerformerFromName(name : String) : List<PerformerEntity>
+
 
 
 }

@@ -16,14 +16,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/image"
-        android:contentDescription="TODO" />
+         />
 
     <TextView
         android:id="@+id/songTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="TextView"
+        android:text="unknown"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <TextView
@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="TextView" />
+        android:text="unknown" />
 
     <SeekBar
         android:id="@+id/positionBar"
@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="-1:11"
-            android:layout_marginLeft="240dp"/>
+            android:layout_marginStart="240dp"/>
     </LinearLayout>
 
     <Button
@@ -63,28 +63,28 @@
         android:layout_height="48dp"
         android:layout_marginTop="40dp"
         android:background="@drawable/play"
-        android:onClick="playBtnClick" />
+        />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="40dp"
-        android:gravity="center">
-        <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:src="@drawable/sound"/>
-        <SeekBar
-            android:id="@+id/volumeBar"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:progress="50"
-            android:max="100"/>
-        <ImageView
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:src="@drawable/sound2"/>
-    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_marginTop="40dp"-->
+<!--        android:gravity="center">-->
+<!--        <ImageView-->
+<!--            android:layout_width="18dp"-->
+<!--            android:layout_height="18dp"-->
+<!--            android:src="@drawable/sound"/>-->
+<!--        <SeekBar-->
+<!--            android:id="@+id/volumeBar"-->
+<!--            android:layout_width="300dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:progress="50"-->
+<!--            android:max="100"/>-->
+<!--        <ImageView-->
+<!--            android:layout_width="26dp"-->
+<!--            android:layout_height="26dp"-->
+<!--            android:src="@drawable/sound2"/>-->
+<!--    </LinearLayout>-->
 
 </LinearLayout>
