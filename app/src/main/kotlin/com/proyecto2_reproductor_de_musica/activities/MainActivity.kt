@@ -5,7 +5,6 @@ import android.R.layout.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.proyecto2_reproductor_de_musica.R
-import com.proyecto2_reproductor_de_musica.data.PlayingLiveData
 import com.proyecto2_reproductor_de_musica.data.viewModels.MediaViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import res.layout.*
@@ -41,14 +39,7 @@ class MainActivity : AppCompatActivity() {
 
          //navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment)!!
 
-        var liveData = PlayingLiveData()
-        try {
-            liveData
-            //liveData.navListFragmentInstance = (navHostFragment.childFragmentManager.findFragmentById(R.layout.fragment_list) as PlayingFragment?)!!
 
-        }catch (e : Exception){
-            Log.d("m", "exception on main activity")
-        }
 
 
 //

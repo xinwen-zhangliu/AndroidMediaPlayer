@@ -1,114 +1,109 @@
 package com.proyecto2_reproductor_de_musica.services
 
-import android.annotation.SuppressLint
 import android.app.*
 import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Binder
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Message
-import androidx.lifecycle.Observer
+import android.util.Log
 import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.activities.MainActivity
 import com.proyecto2_reproductor_de_musica.data.Constants.CHANNEL_ID
 import com.proyecto2_reproductor_de_musica.data.Constants.MUSIC_NOTIFICATION_ID
-import com.proyecto2_reproductor_de_musica.data.PlayingLiveData
+import com.proyecto2_reproductor_de_musica.data.repositories.LiveDataRepository
 import com.proyecto2_reproductor_de_musica.data.viewModels.PlayingViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import java.io.File
 
 class PlayingService : Service() {
 
     private lateinit var musicPlayer : MediaPlayer
-    var liveData = PlayingLiveData()
+
     lateinit var playingViewModel : PlayingViewModel
+    private val liveDataRepo = LiveDataRepository()
+    //lateinit var viewModel: PlayingViewModel by viewModels()
 
+    private var path : String= ""
+    //--------------------------------//
+    private val binder = LocalBinder()
 
-    companion object{
-        var musicPath : String = ""
+    /**
+     * Creating necessary stuff to bind activities to the service and control childfragments
+     */
+    inner class LocalBinder : Binder(){
+        /**
+         * returns instance of PlayingService
+         */
+        fun getService():PlayingService = this@PlayingService
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        return null
+    override fun onBind(intent: Intent): IBinder {
+        path = intent.getStringExtra("pathOfSong").toString()
+        initMusic()
+        return binder
     }
+    //---------------------------------//
 
-    private val serviceJob = Job()
-    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
+
+
+//    private val serviceJob = Job()
+//    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
 
     override fun onDestroy() {
         super.onDestroy()
-       // liveData.path.removeObserver(ober)
-        serviceJob.cancel()
+        //serviceJob.cancel()
     }
 
     override fun onCreate() {
         super.onCreate()
-
-        //initMusic()
         createNotificationChannel()
+    }
+
+
+    private fun initMusic(){
+        val song = File(path)
+        musicPlayer = MediaPlayer.create(this, Uri.fromFile(song))
+        musicPlayer.isLooping = true
+        musicPlayer.setVolume(0.5f, 0.5f)
+        musicPlayer.start()
+    }
+
+    fun getSongCurrPos() : Int{
+        return musicPlayer.currentPosition
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         showNotification()
 
-        val observerStartStopMedia = Observer<String>{ data->
-            musicPlayer.reset()
-            initMusic()
-        }
-
-        val observerPlayPauseMedia = Observer<Boolean> {data ->
-            startStopMedia()
-        }
-
-        liveData.path.observeForever(observerStartStopMedia)
-        liveData.state.observeForever(observerPlayPauseMedia)
-
-
         return START_STICKY
     }
 
 
-    private fun playPauseMedia(){
 
-    }
 
-    private fun startStopMedia(){
+    fun startStopMedia(){
         if(musicPlayer.isPlaying){
             musicPlayer.stop()
         }else{
-//            serviceScope.launch {
-//                musicPlayer.start()
-//                musicPlayer.currentPosition
-//
-//            }
 
-            musicPlayer.start()
-            Thread(Runnable {
-                while (musicPlayer != null) {
-                    try {
-                        var msg = Message()
-                        msg.what = musicPlayer.currentPosition
-                        handler.sendMessage(msg)
-                        Thread.sleep(100)
-                    } catch (e: InterruptedException) {
-                    }
-                }
-            }).start()
+            try{
+                musicPlayer.start()
+            }catch (e : java.lang.IllegalStateException){
+                Log.d("x", "Playing Service, MediaPlayer is om invalid state")
+            }
 
         }
     }
 
-    @SuppressLint("HandlerLeak")
-    var handler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            var currentPosition = msg.what
-            liveData.setNewPosition(currentPosition)
-        }
+    fun seekTo(place : Int){
+        musicPlayer.seekTo(place)
+    }
+
+
+    fun isPlaying() : Boolean{
+        return musicPlayer.isPlaying
     }
 
 
@@ -129,12 +124,7 @@ class PlayingService : Service() {
         startForeground(MUSIC_NOTIFICATION_ID, notification)
     }
 
-    private fun initMusic(){
-        val song = File(liveData.path.value.toString())
-        musicPlayer = MediaPlayer.create(this, Uri.fromFile(song))
-        musicPlayer.isLooping = true
-        musicPlayer.setVolume(0.5f, 0.5f)
-    }
+
 
     private fun createNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){

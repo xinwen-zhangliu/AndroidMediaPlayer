@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.adapter.MediaItemDataAdapter
-import com.proyecto2_reproductor_de_musica.data.PlayingLiveData
 import com.proyecto2_reproductor_de_musica.data.db.entities.SongEntity
 import com.proyecto2_reproductor_de_musica.data.models.MediaDataProvider
 import com.proyecto2_reproductor_de_musica.data.models.toDomain
@@ -35,7 +34,7 @@ class ListFragment : Fragment() {
 
     private lateinit var mediaViewModel : MediaViewModel
     lateinit var binding : FragmentListBinding
-    var liveData = PlayingLiveData()
+
 
 
     override fun onCreateView(
@@ -50,6 +49,7 @@ class ListFragment : Fragment() {
 
 
             displayMedia(binding.root)
+
 
 
         return binding.root

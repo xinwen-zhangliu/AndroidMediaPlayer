@@ -11,7 +11,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.proyecto2_reproductor_de_musica.MusicPlayerApp
-import com.proyecto2_reproductor_de_musica.data.PlayingLiveData
 import com.proyecto2_reproductor_de_musica.data.db.MediaDatabase
 import com.proyecto2_reproductor_de_musica.data.db.dao.GeneralDao
 import com.proyecto2_reproductor_de_musica.data.db.dao.RawDao
@@ -48,10 +47,6 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
      * First executed when viewModel is called
      */
     init {
-//        val songDao = MediaDatabase.getDatabase(application).getSongDao()
-//        val typesDao = MediaDatabase.getDatabase(application).getTypeDao()
-//        val albumsDao = MediaDatabase.getDatabase
-
         generalDao = MediaDatabase.getDatabase(application).getGeneralDao()
         createTypes(generalDao)
         rawDao = MediaDatabase.getDatabase(application).getRawDao()
@@ -210,8 +205,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
             withContext(Dispatchers.Main){
                 Log.d("x", "Finished reading files, setting livedata as true")
-                var liveData = PlayingLiveData()
-                liveData.finished.postValue(true)
+
             }
             //end of corrutine scope
         }
