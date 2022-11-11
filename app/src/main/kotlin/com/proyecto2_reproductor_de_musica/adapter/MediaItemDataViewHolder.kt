@@ -1,6 +1,5 @@
 package com.proyecto2_reproductor_de_musica.adapter
 
-import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -63,7 +62,7 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
         songTitle.text = title
         var text = "$artist | $album"
         author.text = text
-        var hasImage = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_COUNT)?.toInt()?:-1
+        //var hasImage = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_COUNT)?.toInt()?:-1
 //        if(hasImage>0  ){
 //            var imageAtIndex:Int =
 //                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_PRIMARY)?.toInt() ?:-1
@@ -72,11 +71,15 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
 //
 //        }
 
-        val artBytes = mmr.embeddedPicture
-        if (artBytes != null) {
-            val bm = BitmapFactory.decodeByteArray(artBytes, 0, artBytes.size)
-            image.setImageBitmap(bm)
-        }
+        //val artBytes = mmr.embeddedPicture
+
+//        if (artBytes != null) {
+//            val bm = BitmapFactory.decodeByteArray(artBytes, 0, artBytes.size)
+//            image.setImageBitmap(bm)
+//        }
+//        if(hasImage==-1){
+//            image.setImageResource(R.drawable.image)
+//        }
 
     }
 

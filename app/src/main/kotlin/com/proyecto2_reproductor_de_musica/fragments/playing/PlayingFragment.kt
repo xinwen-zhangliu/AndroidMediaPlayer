@@ -1,5 +1,6 @@
 package com.proyecto2_reproductor_de_musica.fragments.playing
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
@@ -10,19 +11,21 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.databinding.FragmentPlayingBinding
 import com.proyecto2_reproductor_de_musica.services.PlayingService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import java.io.File
 
 
@@ -47,7 +50,7 @@ class PlayingFragment : Fragment(){
 
     lateinit var pathOfSong :String
 
-
+    private var currentPosition = 0
 
 
     companion object {
@@ -77,7 +80,7 @@ class PlayingFragment : Fragment(){
 
 
     private lateinit var mService : PlayingService
-    private var mBound : Boolean = false
+    private var mBound :MutableLiveData<Boolean> = MutableLiveData()
 
     /** Defines callbacks for service binding, passed to bindService()  */
     private val connection = object : ServiceConnection {
@@ -86,28 +89,30 @@ class PlayingFragment : Fragment(){
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             val binder = service as PlayingService.LocalBinder
             mService = binder.getService()
-            mBound = true
+            mService.setPath(pathOfSong)
+            mBound.value = true
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
-            mBound = false
+            mBound.value = false
         }
     }
-//    @SuppressLint("HandlerLeak")
-//    var handler = object : Handler() {
-//        override fun handleMessage(msg: Message) {
-//            var currentPosition = msg.what
-//            var elapsedtime = createTimeLabel(currentPosition)
-//            binding.elapsedTimeLabel.text = elapsedtime
-//        }
-//    }
 
-    //lateinit var runnable : kotlinx.coroutines.Runnable
+
+    val job = Job()
+    val uiScope = CoroutineScope(Dispatchers.Main + job)
+
+
+
+    private var paused : Boolean = false
+
+    lateinit var runnable : kotlinx.coroutines.Runnable
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentPlayingBinding.inflate(inflater, container, false)
+
 
         var file = File(pathOfSong)
         mp = MediaPlayer.create(this.context, Uri.fromFile(file))
@@ -116,38 +121,40 @@ class PlayingFragment : Fragment(){
 
         //Binding to service
         var musicIntent = Intent(activity,PlayingService::class.java)
+        activity!!.intent.removeExtra("pathOfSong")
+        musicIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        musicIntent = Intent(activity,PlayingService::class.java)
         musicIntent.putExtra("pathOfSong", pathOfSong)
+
+        Log.d("x", "pathofsong in intent " + pathOfSong)
         musicIntent.also {intent ->
+            intent.removeExtra("pathOfSong")
+            intent.putExtra("pathOfSong", pathOfSong)
+            activity!!.intent.removeExtra("pathOfSong")
+            intent.putExtra("pathOfSong", pathOfSong)
             activity!!.bindService(musicIntent, connection, Context.BIND_AUTO_CREATE)
         }
 
 
 
-//        runnable = Runnable {
-//            if(mBound){
-//                while (mService.getSongCurrPos()<= totalTime) {
-//                    try {
-//                        var msg = Message()
-//                        msg.what = mService.getSongCurrPos()
-//                        handler.sendMessage(msg)
-//                        Thread.sleep(1000)
-//                    } catch (e: InterruptedException) {
-//                    }
-//                }
-//            }else{
-//                handler.postDelayed(runnable, 1000)
-//            }
-//
-//        }
-//        var threadT = Thread(runnable).start()
-//        handler.postDelayed(runnable, 1000)
+
+
+
+//late in the button click
+
+
+
+
+
+
+
 
 
 
         getLabels()
 
 
-
+        binding.playBtn.setBackgroundResource(R.drawable.stop)
         binding.playBtn.setOnClickListener{
             togglePlayButton()
         }
@@ -162,6 +169,7 @@ class PlayingFragment : Fragment(){
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     if (fromUser) {
                        mService.seekTo(progress)
+                        currentPosition= progress
                     }
                 }
                 override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -171,42 +179,137 @@ class PlayingFragment : Fragment(){
             }
         )
 
-//        liveData.position.observe(viewLifecycleOwner, Observer<Int>{
-//            it?.let {
-//                fragmentScope.launch(Dispatchers.IO) {
-//                    //move seekbar to where it should be and change the numbers
-//                    binding.positionBar.progress = liveData.position.value!!
+//        uiScope.launch(Dispatchers.IO ){
+//            //asyncOperation
+//            while(mService.getSongCurrPos()< totalTime) {
 //
-//                    var elapsedTime = createTimeLabel(liveData.position.value!!)
-//                    binding.elapsedTimeLabel.text = elapsedTime
+//                var elapsedtime = createTimeLabel(mService.getSongCurrPos())
+//                //withContext(Dispatchers.Main) {
+//                binding.elapsedTimeLabel.text = elapsedtime
 //
-////                var remainingTime = createTimeLabel(totalTime - liveData.position.value!!)
-////                binding.remainingTimeLabel.text = "-$remainingTime"
-//                    withContext(Dispatchers.Main){
+//                //}
+//            }
+
+        mBound.observe(viewLifecycleOwner, Observer<Boolean>{ bound ->
+            //Toast.makeText(this.context, "observe bound =" + bound, Toast.LENGTH_SHORT).show()
+            if(bound==true){
+                if(mService.getPath().equals(pathOfSong)){
+                    currentPosition= mService.getSongCurrPos()
+                }else{
+                    mService.seekTo(0)
+                    binding.elapsedTimeLabel.text = createTimeLabel(0)
+                }
+            }
+
+        })
+
+        // Thread
+        Thread(Runnable {
+
+            while (currentPosition <= totalTime) {
+                try {
+                    Log.d("x",
+                        "In threadRunnable, currPos= $currentPosition total tiem = $totalTime"
+                    )
+                    if(!paused){
+                        var msg = Message()
+                        this.currentPosition+=1000
+                        msg.what = this.currentPosition
+                        handler.sendMessage(msg)
+                    }
+
+                    Thread.sleep(1000)
+                } catch (e: InterruptedException) {
+                    Log.d("x", " caught interruptedException in thread runnable")
+                }
+            }
+        }).start()
+
+
+//            mBound.observe(viewLifecycleOwner, Observer<Boolean>{ bound ->
+//                Log.d("x", "received bound , will start the porgress updater")
+//                mp.setVolume(0F,0F)
+//                if(mBound.value ==true){
+//                    val mediaPlayer = mService.getMediaPlayer()
+//                    runnable = Runnable {
+//                        if(mBound.value!!){
+//                            while (mediaPlayer!=null) {
+//                                try {
+//                                    var elapsedtime = createTimeLabel(mediaPlayer.currentPosition)
+//                                    binding.elapsedTimeLabel.text = elapsedtime
+//                                    binding.positionBar.progress = mediaPlayer.currentPosition
+//                                    Thread.sleep(1000)
+//                                } catch (e: InterruptedException) {
+//                                }
+//                            }
+//                        }else{
+//                            handler.postDelayed(runnable, 1000)
+//                        }
 //
 //                    }
+//                    Thread(runnable).start()
+//
 //                }
 //
-//
-//            }
-//        })
-
+//            })
 
 
 
         return binding.root
     }
 
-    override fun onDestroy() {
-        fragmentJob.cancel()
-        super.onDestroy()
+    @SuppressLint("HandlerLeak")
+    var handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            Log.d("x", "handler message received : " + msg.what)
+            var currentPosition = msg.what
+
+            // Update positionBar
+
+            binding.positionBar.progress = currentPosition
+
+            // Update Labels
+            var elapsedTime = createTimeLabel(currentPosition)
+            binding.elapsedTimeLabel.text = elapsedTime
+
+//            var remainingTime = createTimeLabel(totalTime - currentPosition)
+//            remainingTimeLabel.text = "-$remainingTime"
+        }
+    }
+
+
+
+    override fun onStop() {
+        Log.d("x", "fragment stopped")
+
+        super.onStop()
+
 
     }
+
+
+    override fun onDestroy() {
+        Log.d("x", "fragment destroyed")
+        fragmentJob.cancel()
+        super.onDestroy()
+        if(mBound.value!!)
+            activity!!.unbindService(connection)
+        mBound.value = false
+        //mService.unbindService(connection)
+
+
+        activity!!.supportFragmentManager.beginTransaction().remove(this@PlayingFragment).commit()
+    }
+
     fun togglePlayButton(){
         if(mService.isPlaying()){
-            binding.playBtn.setBackgroundResource(R.drawable.stop)
-        }else{
             binding.playBtn.setBackgroundResource(R.drawable.play)
+            paused=true
+            mService.startStopMedia()
+        }else{
+            binding.playBtn.setBackgroundResource(R.drawable.stop)
+            paused=false
+            mService.startStopMedia()
         }
     }
 
@@ -221,8 +324,6 @@ class PlayingFragment : Fragment(){
 
         return timeLabel
     }
-
-
 
 
     private fun isPlayingServiceRunning(mClass : Class<PlayingService>) : Boolean{
@@ -278,20 +379,7 @@ class PlayingFragment : Fragment(){
 
 
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-
-
-//        playingViewModel.position.observe(viewLifecycleOwner, Observer<Int>{
-//            it?.let {
-//
-//
-//            }
-//        })
-
-
-    }
 
 
 }

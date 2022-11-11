@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<item
+    android:id="@+id/songData_action"
+    android:title="SongData" />
+    <item
+        android:id="@+id/performerData_action"
+        android:title="PerformerData" />
+    <item
+        android:id="@+id/typeData_action"
+        android:title="TypeData" />
+    <item
+        android:id="@+id/albumData_action"
+        android:title="AlbumData" />
+    <item
+        android:id="@+id/groupData_action"
+        android:title="GroupData" />
+
+
+
+
+
+
+</menu>

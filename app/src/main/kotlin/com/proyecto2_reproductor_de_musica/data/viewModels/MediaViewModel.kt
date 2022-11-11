@@ -7,8 +7,10 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.proyecto2_reproductor_de_musica.MusicPlayerApp
 import com.proyecto2_reproductor_de_musica.data.db.MediaDatabase
@@ -38,10 +40,17 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
     val readAllData : LiveData<List<SongEntity>>
 
     private val repository : MediaRepository
+    @RequiresApi(Build.VERSION_CODES.GINGERBREAD_MR1)
     private val  mmr : MediaMetadataRetriever = MediaMetadataRetriever()
      var generalDao : GeneralDao
      var rawDao: RawDao
      var relationsDao: RelationsDao
+
+     var finishedReading : MutableLiveData<Boolean> = MutableLiveData()
+
+    fun updateFinishedState(state : Boolean){
+        finishedReading.value = state
+    }
 
     /**
      * First executed when viewModel is called
@@ -55,6 +64,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
         readAllData = repository.getAllMediaFromDatabase
 
+        finishedReading.value = false
     }
 
 
@@ -83,6 +93,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
     }
 
     fun getMediaFromFiles(){
+
         viewModelScope.launch (Dispatchers.IO){
 
             //Toast.makeText(getApplication(), "Getting Media From Files", Toast.LENGTH_SHORT ).show()
@@ -205,7 +216,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
             withContext(Dispatchers.Main){
                 Log.d("x", "Finished reading files, setting livedata as true")
-
+                finishedReading.value = true
             }
             //end of corrutine scope
         }

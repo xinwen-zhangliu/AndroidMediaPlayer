@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".fragments.playing.PlayingFragment"
     android:orientation="vertical"
+    android:clickable="true"
     android:gravity="center"
     android:background="@color/black">
 

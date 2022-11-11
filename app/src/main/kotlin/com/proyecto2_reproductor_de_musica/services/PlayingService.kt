@@ -12,17 +12,13 @@ import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.activities.MainActivity
 import com.proyecto2_reproductor_de_musica.data.Constants.CHANNEL_ID
 import com.proyecto2_reproductor_de_musica.data.Constants.MUSIC_NOTIFICATION_ID
-import com.proyecto2_reproductor_de_musica.data.repositories.LiveDataRepository
-import com.proyecto2_reproductor_de_musica.data.viewModels.PlayingViewModel
 import java.io.File
 
 class PlayingService : Service() {
 
     private lateinit var musicPlayer : MediaPlayer
 
-    lateinit var playingViewModel : PlayingViewModel
-    private val liveDataRepo = LiveDataRepository()
-    //lateinit var viewModel: PlayingViewModel by viewModels()
+
 
     private var path : String= ""
     //--------------------------------//
@@ -39,26 +35,63 @@ class PlayingService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        path = intent.getStringExtra("pathOfSong").toString()
-        initMusic()
+        if(path.equals("")){
+            path = intent.getStringExtra("pathOfSong").toString()
+            initMusic()
+        }
+
         return binder
+
+//        path = intent.getStringExtra("pathOfSong").toString()
+//        initMusic()
+//        return binder
     }
     //---------------------------------//
 
 
+    override fun onUnbind(intent: Intent?): Boolean {
 
-//    private val serviceJob = Job()
-//    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
+        return true
+
+    }
+    fun setPath(newPath : String){
+        if(path.equals(newPath))
+            return
+        path = newPath
+        musicPlayer.release()
+        initMusic()
+    }
+    fun getPath():String{
+        return this.path
+    }
+
+    override fun onRebind(intent: Intent?) {
+        Log.d("x", "on rebind playing Service")
+        //super.onRebind(intent)
+
+        onBind(intent!!)
+    }
 
     override fun onDestroy() {
         super.onDestroy()
-        //serviceJob.cancel()
     }
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+//        val notification = Notification()
+//        notification.tickerText = "Music Player ticker text"
+//        notification.icon = R.drawable.image
+//        notification.flags = notification.flags or Notification.FLAG_ONGOING_EVENT
+////        notification.setLatestEventInfo(
+////            applicationContext, "MusicPlayerSample",
+////            "Playing: $songName", pi
+////        )
+////
+////        notification.
+//        startForeground(MUSIC_NOTIFICATION_ID, notification)
+
     }
 
 
@@ -73,6 +106,10 @@ class PlayingService : Service() {
     fun getSongCurrPos() : Int{
         return musicPlayer.currentPosition
     }
+    fun getMediaPlayer() : MediaPlayer{
+        Log.d("x", " getting media player")
+        return musicPlayer
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         showNotification()
@@ -85,9 +122,8 @@ class PlayingService : Service() {
 
     fun startStopMedia(){
         if(musicPlayer.isPlaying){
-            musicPlayer.stop()
+            musicPlayer.pause()
         }else{
-
             try{
                 musicPlayer.start()
             }catch (e : java.lang.IllegalStateException){
