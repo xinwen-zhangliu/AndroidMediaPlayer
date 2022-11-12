@@ -8,9 +8,13 @@ To play each media file, a Service class was created to run in the foreground, t
 MediaPlayer when  changing fragments or minimizing, and to keep the operation running for as long as the user likes. 
  A simple dialog box is shown in the notification panel when the service is started. 
 
-## Data Base
+## Database
 This project uses the google recommended library, Room. 
 
 
 
 
+# Usage
+## Searches
+
+## Adding and editing rows in database tables
