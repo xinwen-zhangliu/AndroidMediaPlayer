@@ -281,19 +281,21 @@ class ListFragment : Fragment() {
                             var toSearch = searchItems[nextIndex]
                             Log.d("x", "field: " + searchItems[i] + " parameter: " + toSearch)
 
-                            when (searchItems[i]) {
+                            when (searchItems[i].trim()) {
                                 "album" -> {
                                     Log.d("x", "inside album case with " + searchItems[i])
                                     var albumId = 0
                                     try{
-                                        albumId =mediaViewModel.generalDao.getAlbumFromName(toSearch).first().id_album
+                                        albumId =mediaViewModel.generalDao
+                                            .getAlbumFromNameLowercase(toSearch.trim().lowercase())
+                                            .first().id_album
                                     }catch (e : Exception){
                                         message = "No album with such name found"
                                     }
 
                                     Log.d("x", "album query result = " + albumId)
 
-                                    queryList.add( "id_album = " + albumId)
+                                    queryList.add( "id_album = " + albumId  )
 
 
                                 }
@@ -311,12 +313,15 @@ class ListFragment : Fragment() {
                                 "artist" -> {
                                     var performerId = 0
                                     try{
-                                        performerId =mediaViewModel.generalDao.getPerformerFromName(toSearch).first().id_performer
+                                        performerId =mediaViewModel.generalDao
+                                            .getPerformerFromNameLowercase(toSearch.trim().lowercase())
+                                            .first().id_performer
                                     }catch (e : Exception){
                                         message = "No artist with such name found"
                                     }
-
-                                    queryList.add( "id_performer = " + performerId)
+                                    if(performerId==0)
+                                        message+="\nArtist not found"
+                                    queryList.add( "id_performer = " + performerId )
                                 }
                                 "genre" -> {
                                     var string = " genre like '%"+searchItems[nextIndex]+"%'"
@@ -342,6 +347,9 @@ class ListFragment : Fragment() {
                                     var string = " "
                                     queryList.add(string)
                                     //rawQuery += " type"
+                                }
+                                "year"->{
+
                                 }
                                 else -> {
                                     Toast.makeText(
@@ -400,6 +408,8 @@ class ListFragment : Fragment() {
                             adapter.setNewData(newList)
                         }else{
                             Log.d("x", "newList is empty")
+                            if(message.isEmpty())
+                                message = "No results"
                             showUserDialog(message)
                         }
                     }

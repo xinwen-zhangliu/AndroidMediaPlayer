@@ -17,7 +17,7 @@ interface GeneralDao {
     @JvmSuppressWildcards
     suspend fun insertAllSongs(songsToInsert:List<SongEntity> )
 
-    @Query("SELECT * FROM rolas_table WHERE id_album =:idToSearch LIMIT 1")
+    @Query("SELECT * FROM rolas_table WHERE id_rola =:idToSearch LIMIT 1")
     suspend fun getSongById(idToSearch:Int): List<SongEntity>
 
     @Update
@@ -54,19 +54,15 @@ interface GeneralDao {
     @Query("SELECT MAX(id_album) FROM albums_table")
     suspend fun getLastIdAlbum():Int
 
-    @Query("SELECT * FROM albums_table WHERE name =:nameSearch LIMIT 1")
-    suspend fun searchAlbumByName(nameSearch : String) : AlbumsEntity
-
     @Query("SELECT * FROM albums_table WHERE id_album =:idToSearch LIMIT 1")
-    suspend fun getAlbumById(idToSearch:Int): AlbumsEntity
+    suspend fun getAlbumById(idToSearch:Int): List<AlbumsEntity>
 
-
-
-    @Query("SELECT id_album FROM albums_table ORDER BY id_album DESC LIMIT 1")
-    fun getLastAlbumId(): List<Long>
 
     @Query("SELECT * FROM albums_table WHERE name =:name LIMIT 1")
     suspend fun getAlbumFromName(name : String) : List<AlbumsEntity>
+
+    @Query("SELECT * FROM albums_table WHERE LOWER(name) =:name LIMIT 1")
+    suspend fun getAlbumFromNameLowercase(name : String) : List<AlbumsEntity>
 
     @Update
     suspend fun updateAlbum(album: AlbumsEntity )
@@ -87,16 +83,17 @@ interface GeneralDao {
     suspend fun getLastIdPerformer():Int
 
     @Query("SELECT * FROM performer_table WHERE id_performer =:idToSearch LIMIT 1")
-    suspend fun getPerformerById(idToSearch:Int): PerformerEntity
+    suspend fun getPerformerById(idToSearch:Int): List<PerformerEntity>
 
-    @Query("SELECT * FROM performer_table WHERE rowid =:rowId LIMIT 1")
-    suspend fun performerFromRow(rowId: Int) : PerformerEntity
 
     @Query("SELECT id_performer FROM performer_table ORDER BY id_performer DESC LIMIT 1")
     fun getLastPerformerId(): List<Long>
 
-    @Query("SELECT * FROM performer_table WHERE name =:name LIMIT 1")
+    @Query("SELECT * FROM performer_table WHERE name =:name  LIMIT 1")
     suspend fun getPerformerFromName(name : String) : List<PerformerEntity>
+
+    @Query("SELECT * FROM performer_table WHERE LOWER(name) =:name  LIMIT 1")
+    suspend fun getPerformerFromNameLowercase(name : String) : List<PerformerEntity>
 
     @Update
     suspend fun updatePerformer(performer: PerformerEntity)
