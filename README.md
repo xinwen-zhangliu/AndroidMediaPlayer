@@ -1,15 +1,20 @@
-# Proyecto 2 - MusicPlayer
-#####Lenguaje Utilizado 
-El lenguaje utlizado en este proyecto es Kotlin 
+# Proyecto 2 - MusicPlayer | Class: Modelado y Programación
 
-#####Diseño de la aplicación   
-En esta aplicación usa la arquitectura MVVM de Android en referencia al uso de Model, View y ViewModel. 
-Para organizar los fragmentos se han usado gráficas de navegación.
+## Design of the application
+This project is using the MVVM architecture, denoting the use of Models, Views and ViewModels. To organize the fragments, a navigation grpah has been used. 
 
-######Base de Datos
-Para la base de datos se usa una herrameinta nativa de Android la cual es Room, un  ORM (Object Retaional Mapping) 
-que usa SQLite
+###### The Music Player
+To play each media file, a Service class was created to run in the foreground, to avoid interrupting the 
+MediaPlayer when  changing fragments or minimizing, and to keep the operation running for as long as the user likes. 
+ A simple dialog box is shown in the notification panel when the service is started. 
+
+## Database
+This project uses the google recommended library, Room. 
 
 
 
 
+# Usage
+## Searches
+
+## Adding and editing rows in database tables
