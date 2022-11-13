@@ -1,5 +1,6 @@
 package com.proyecto2_reproductor_de_musica.fragments.edit
 
+
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -63,7 +64,7 @@ class SongInfoFragment : Fragment() {
         mediaViewModel = ViewModelProvider(this).get(MediaViewModel::class.java)
 
         Log.d("x", "displaying song info fragment")
-        Log.d("x", "the of song is " +args.currentMediaItemData.mediaId)
+        Log.d("x", "the of song is " )
 
 
         this.path = args.currentMediaItemData.path
@@ -135,17 +136,6 @@ class SongInfoFragment : Fragment() {
 
     fun updateitem(view : View){
         //SONG DATA
-//        var track : Int = 0
-//        if(!binding.trackNumber.text.isNullOrEmpty()) {
-//             track= Integer.parseInt(binding.trackNumber.text.toString())
-//        }
-//        Log.d("x", "track number")
-//        var title : String = binding.songTitle.text.toString()
-//        var genre : String = binding.genreEdtText.text.toString()
-//        var year : Int = 0
-//        if(!binding.year.text.isNullOrEmpty()) {
-//            year= Integer.parseInt(binding.year.text.toString())
-//        }
 
         var songTitle = view.findViewById<TextInputLayout>(R.id.songTitle_layout)
         var songYear = view.findViewById<TextInputLayout>(R.id.year_layout)

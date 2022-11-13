@@ -7,7 +7,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -40,7 +39,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
     val readAllData : LiveData<List<SongEntity>>
 
     private val repository : MediaRepository
-    @RequiresApi(Build.VERSION_CODES.GINGERBREAD_MR1)
+    var foundPath = true
     private val  mmr : MediaMetadataRetriever = MediaMetadataRetriever()
      var generalDao : GeneralDao
      var rawDao: RawDao
@@ -92,7 +91,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
         }
     }
 
-    fun getMediaFromFiles(){
+    fun getMediaFromFiles(path  : String? ){
 
         viewModelScope.launch (Dispatchers.IO){
 
@@ -107,9 +106,10 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
                 }
 
 
+
             val internalCollection = MediaStore.Audio.Media.INTERNAL_CONTENT_URI
 
-           var collectionList =  listOf<Uri>(collection, internalCollection)
+           var collectionList =  mutableListOf<Uri>(collection, internalCollection)
 
 
             val projection = arrayOf(
@@ -121,6 +121,22 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
             var selection = MediaStore.Audio.Media.IS_MUSIC + "!=0"
 
+
+            if(!path.isNullOrEmpty()){
+                collectionList.clear()
+                try{
+                    var file = File(path)
+                    if(file.exists()){
+                        var uri = Uri.fromFile(file)
+                        collectionList.add(uri)
+                    }else{
+                        foundPath= false
+                    }
+                }catch (e : Exception){
+                    foundPath= false
+                }
+
+            }
             for(uri in collectionList){
                 var cursor = getApplication<MusicPlayerApp>().contentResolver.query(
                     collection,
@@ -197,7 +213,9 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
 
             withContext(Dispatchers.Main){
                 Log.d("x", "Finished reading files, setting livedata as true")
+
                 finishedReading.value = true
+
             }
             //end of corrutine scope
         }

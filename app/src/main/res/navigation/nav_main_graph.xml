@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_listFragment_to_songInfoFragment"
             app:destination="@id/songInfoFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_performerListFragment"
+            app:destination="@id/performerListFragment" />
     </fragment>
     <fragment
         android:id="@+id/playingFragment"
@@ -37,5 +40,48 @@
         <argument
             android:name="currentMediaItemData"
             app:argType="com.proyecto2_reproductor_de_musica.data.models.MediaItemData" />
+
+
+    </fragment>
+    <fragment
+        android:id="@+id/performerListFragment"
+        android:name="com.proyecto2_reproductor_de_musica.fragments.list.PerformerListFragment"
+        android:label="PerformerListFragment"
+        tools:layout="@layout/fragment_performer_list">
+        <action
+            android:id="@+id/action_performerListFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <action
+            android:id="@+id/action_performerListFragment_to_personInfoFragment"
+            app:destination="@id/personInfoFragment" />
+        <action
+            android:id="@+id/action_performerListFragment_to_groupInfoFragment"
+            app:destination="@id/groupInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/personInfoFragment"
+        android:name="com.proyecto2_reproductor_de_musica.fragments.edit.PersonInfoFragment"
+        android:label="fragment_person_info"
+        tools:layout="@layout/fragment_person_info" >
+        <argument
+            android:name="currentPerformer"
+            app:argType="com.proyecto2_reproductor_de_musica.data.db.entities.PerformerEntity" />
+    </fragment>
+    <fragment
+        android:id="@+id/addMemberFragment"
+        android:name="com.proyecto2_reproductor_de_musica.fragments.edit.AddMemberFragment"
+        android:label="fragment_add_member"
+        tools:layout="@layout/fragment_add_member" />
+    <fragment
+        android:id="@+id/groupInfoFragment"
+        android:name="com.proyecto2_reproductor_de_musica.fragments.edit.GroupInfoFragment"
+        android:label="fragment_group_info"
+        tools:layout="@layout/fragment_group_info" >
+        <action
+            android:id="@+id/action_groupInfoFragment_to_addMemberFragment"
+            app:destination="@id/addMemberFragment" />
+        <argument
+            android:name="currentPerformer"
+            app:argType="com.proyecto2_reproductor_de_musica.data.db.entities.PerformerEntity" />
     </fragment>
 </navigation>

@@ -25,6 +25,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.sqlite.db.SimpleSQLiteQuery
@@ -91,24 +92,31 @@ class ListFragment : Fragment() {
             }
         })
 
+        binding.addPersonsBtn.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(p0: View?) {
+                var action  = ListFragmentDirections.actionListFragmentToPerformerListFragment()
+                binding.root.findNavController().navigate(action)
+            }
+        })
+
         return binding.root
     }
     fun showdialog() : String{
         val builder: AlertDialog.Builder = android.app.AlertDialog.Builder(this@ListFragment.context)
         builder.setTitle("Please write the full path to the folder")
 
-// Set up the input
         val input = EditText(this@ListFragment.context)
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+
         input.setHint("Enter Path")
         input.inputType = InputType.TYPE_CLASS_TEXT
         builder.setView(input)
 
-// Set up the buttons
+        // Set up the buttons
         var m_Text : String = ""
         builder.setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
-            // Here you get get input text from the Edittext
+
              m_Text = input.text.toString()
+            mediaViewModel.getMediaFromFiles(m_Text)
         })
         builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
 
@@ -170,10 +178,6 @@ class ListFragment : Fragment() {
         return false
     }
 
-    override fun onDestroy() {
-        //activity!!.stopService(Intent(this.context, PlayingService::class.java ))
-        super.onDestroy()
-    }
 
     fun displayMedia(view :View ){
 
@@ -193,7 +197,7 @@ class ListFragment : Fragment() {
             //adapter = MediaItemDataAdapter(mapping)
             //if(mediaViewModel.readAllData.value.isNullOrEmpty()){
             if(mediaViewModel.readAllData.value.isNullOrEmpty()){
-                mediaViewModel.getMediaFromFiles()
+                mediaViewModel.getMediaFromFiles(null)
                 Toast.makeText(this.context, " There is nothing in the database so we are reading from files", Toast.LENGTH_SHORT).show()
                 mediaViewModel.finishedReading.observe(viewLifecycleOwner, Observer<Boolean>{   boolean->
                     if(boolean){

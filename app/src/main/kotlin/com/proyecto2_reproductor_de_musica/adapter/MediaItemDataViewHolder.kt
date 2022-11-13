@@ -43,12 +43,11 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
         moreOptions.setOnClickListener(object: View.OnClickListener{
             override fun onClick(p0: View?) {
                 Log.d("x", "you clicked the more optiosn button on song " + media.title)
+
+
                 var action = ListFragmentDirections.actionListFragmentToSongInfoFragment(media)
                 itemView.findNavController().navigate(action)
 
-//                val activity = p0!!.context as AppCompatActivity
-//                val songInfoFragment = SongInfoFragment.newInstance(media)
-//                activity.supportFragmentManager.beginTransaction().replace(R.id.mainActivity, songInfoFragment).addToBackStack(null).commit()
 
             }
         })

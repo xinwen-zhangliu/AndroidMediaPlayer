@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 if ((grantResults.isNotEmpty() &&
                             grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Log.d("x", "permissions granted")
-                    mediaViewModel.getMediaFromFiles()
+                    mediaViewModel.getMediaFromFiles(null)
                 } else {
                     Log.d("x", "permissions not granted")
                     // Explain to the user that the feature is unavailable because

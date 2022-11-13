@@ -6,7 +6,8 @@
     android:layout_marginLeft="16dp"
     android:layout_marginBottom="16dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".fragments.edit.GroupInfoFragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/groupDataTitle"
@@ -93,8 +94,10 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/membersTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/membersTitle"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/addMember_btn"
@@ -112,7 +115,7 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_done_24" />
+        app:srcCompat="@drawable/ic_baseline_save_24" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

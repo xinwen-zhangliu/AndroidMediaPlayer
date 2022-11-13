@@ -2,10 +2,7 @@ package com.proyecto2_reproductor_de_musica.data.db.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.proyecto2_reproductor_de_musica.data.db.entities.AlbumsEntity
-import com.proyecto2_reproductor_de_musica.data.db.entities.PerformerEntity
-import com.proyecto2_reproductor_de_musica.data.db.entities.SongEntity
-import com.proyecto2_reproductor_de_musica.data.db.entities.TypesEntity
+import com.proyecto2_reproductor_de_musica.data.db.entities.*
 
 @Dao
 interface GeneralDao {
@@ -100,6 +97,19 @@ interface GeneralDao {
 
     @Delete
     suspend fun deletePerformer(performer: PerformerEntity)
+
+
+
+    //------------------Persons
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @JvmSuppressWildcards
+    suspend fun insertPerson(person : PersonsEntity)
+
+    @Update
+    suspend fun updatePersonData(person : PersonsEntity)
+
+    @Delete
+    suspend fun deletePerson(person : PersonsEntity)
 
 
 }
