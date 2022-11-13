@@ -52,6 +52,8 @@ class PlayingFragment : Fragment(){
 
     private var currentPosition = 0
 
+    val RECEIVER_INTENT = "RECEIVER_INTENT"
+    val RECEIVER_MESSAGE = "RECEIVER_MESSAGE"
 
     companion object {
 
@@ -208,9 +210,7 @@ class PlayingFragment : Fragment(){
 
             while (currentPosition <= totalTime) {
                 try {
-                    Log.d("x",
-                        "In threadRunnable, currPos= $currentPosition total tiem = $totalTime"
-                    )
+
                     if(!paused){
                         var msg = Message()
                         this.currentPosition+=1000
@@ -226,32 +226,7 @@ class PlayingFragment : Fragment(){
         }).start()
 
 
-//            mBound.observe(viewLifecycleOwner, Observer<Boolean>{ bound ->
-//                Log.d("x", "received bound , will start the porgress updater")
-//                mp.setVolume(0F,0F)
-//                if(mBound.value ==true){
-//                    val mediaPlayer = mService.getMediaPlayer()
-//                    runnable = Runnable {
-//                        if(mBound.value!!){
-//                            while (mediaPlayer!=null) {
-//                                try {
-//                                    var elapsedtime = createTimeLabel(mediaPlayer.currentPosition)
-//                                    binding.elapsedTimeLabel.text = elapsedtime
-//                                    binding.positionBar.progress = mediaPlayer.currentPosition
-//                                    Thread.sleep(1000)
-//                                } catch (e: InterruptedException) {
-//                                }
-//                            }
-//                        }else{
-//                            handler.postDelayed(runnable, 1000)
-//                        }
-//
-//                    }
-//                    Thread(runnable).start()
-//
-//                }
-//
-//            })
+
 
 
 
@@ -261,7 +236,7 @@ class PlayingFragment : Fragment(){
     @SuppressLint("HandlerLeak")
     var handler = object : Handler() {
         override fun handleMessage(msg: Message) {
-            Log.d("x", "handler message received : " + msg.what)
+            //Log.d("x", "handler message received : " + msg.what)
             var currentPosition = msg.what
 
             // Update positionBar
@@ -359,7 +334,7 @@ class PlayingFragment : Fragment(){
         var album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
         var title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
         binding.songTitle.text = title
-        var text = "$artist|$album"
+        var text = "$artist | $album"
         binding.author.text = text
         var hasImage = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_COUNT)?.toInt()?:-1
 

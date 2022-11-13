@@ -41,7 +41,7 @@
         app:layout_constraintTop_toBottomOf="@+id/listSearchView" />
 
     <ImageButton
-        android:id="@+id/button"
+        android:id="@+id/selectFolder_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="0.5dp"
@@ -56,20 +56,21 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:outlineSpotShadowColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/recycler_view"
         app:layout_constraintEnd_toEndOf="@+id/recycler_view"
         app:layout_constraintStart_toStartOf="@+id/recycler_view"
         app:layout_constraintTop_toBottomOf="@+id/listSearchView"/>
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/addPersons_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="11dp"
         android:layout_marginBottom="4dp"
         android:src="@drawable/ic_baseline_person_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintEnd_toStartOf="@+id/selectFolder_btn"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 

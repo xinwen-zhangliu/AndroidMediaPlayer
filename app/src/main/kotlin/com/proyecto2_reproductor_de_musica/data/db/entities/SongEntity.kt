@@ -1,9 +1,6 @@
 package com.proyecto2_reproductor_de_musica.data.db.entities
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 
 /**
@@ -27,13 +24,13 @@ import androidx.room.PrimaryKey
 )
 data class SongEntity (
     @PrimaryKey(autoGenerate = true) val id_rola:Int,
-    val id_performer:Int, //Foreign key
-    val id_album:Int, //Foreign key
-    val path: String,
-    val title:String,
-    val track:Int,
-    val year:Int,
-    val genre:String,
+    @ColumnInfo(name = "id_performer") val id_performer:Int, //Foreign key
+    @ColumnInfo(name = "id_album") val id_album:Int, //Foreign key
+    @ColumnInfo(name = "path") val path: String,
+    @ColumnInfo(name = "title") val title:String,
+    @ColumnInfo(name = "track") val track:Int,
+    @ColumnInfo(name = "year") val year:Int,
+    @ColumnInfo(name = "genre") val genre:String,
 )
 
 //fun MediaItemData.toDatabase() = SongEntity(title = title, performer = author, path = path)

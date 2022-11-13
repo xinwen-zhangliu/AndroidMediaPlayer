@@ -1,15 +1,21 @@
 package com.proyecto2_reproductor_de_musica.fragments.list
 
 import android.app.ActivityManager
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteAbortException
+import android.database.sqlite.SQLiteException
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,8 +24,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.sqlite.db.SimpleSQLiteQuery
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.adapter.MediaItemDataAdapter
 import com.proyecto2_reproductor_de_musica.data.db.entities.SongEntity
@@ -28,6 +37,7 @@ import com.proyecto2_reproductor_de_musica.data.models.toDomain
 import com.proyecto2_reproductor_de_musica.data.viewModels.MediaViewModel
 import com.proyecto2_reproductor_de_musica.databinding.FragmentListBinding
 import com.proyecto2_reproductor_de_musica.services.PlayingService
+import kotlinx.coroutines.*
 import java.util.*
 
 
@@ -46,6 +56,7 @@ class ListFragment : Fragment() {
 
     private lateinit var adapter: MediaItemDataAdapter
     private var loaded:MutableLiveData<Boolean> = MutableLiveData()
+    private var result : MutableLiveData<List<SongEntity>> = MutableLiveData()
 
 
 
@@ -53,7 +64,15 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        startStopService()
+        //startStopService()
+        if(!isPlayingServiceRunning(PlayingService::class.java)){
+            Toast.makeText(this.context, "service Started", Toast.LENGTH_SHORT).show()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                activity!!.startForegroundService(Intent(this.context, PlayingService::class.java ))
+            } else {
+                activity!!.startService(Intent(this.context, PlayingService::class.java ))
+            }
+        }
 
         binding = FragmentListBinding.inflate(inflater, container, false)
         mediaViewModel = ViewModelProvider(this).get(MediaViewModel::class.java)
@@ -63,9 +82,38 @@ class ListFragment : Fragment() {
         //var view =inflater.inflate(R.layout.fragment_list, container, false)
         displayMedia(binding.root)
 
+        //CLick listeners for the buttons
+        binding.selectFolderBtn.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                Log.d("x", "Select Folder button has been clicked")
+                showdialog()
 
+            }
+        })
 
         return binding.root
+    }
+    fun showdialog() : String{
+        val builder: AlertDialog.Builder = android.app.AlertDialog.Builder(this@ListFragment.context)
+        builder.setTitle("Please write the full path to the folder")
+
+// Set up the input
+        val input = EditText(this@ListFragment.context)
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setHint("Enter Path")
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        builder.setView(input)
+
+// Set up the buttons
+        var m_Text : String = ""
+        builder.setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+            // Here you get get input text from the Edittext
+             m_Text = input.text.toString()
+        })
+        builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+
+        builder.show()
+        return m_Text
     }
 
     private var activityResultLauncher: ActivityResultLauncher<Array<String>>
@@ -123,7 +171,7 @@ class ListFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        activity!!.stopService(Intent(this.context, PlayingService::class.java ))
+        //activity!!.stopService(Intent(this.context, PlayingService::class.java ))
         super.onDestroy()
     }
 
@@ -184,38 +232,179 @@ class ListFragment : Fragment() {
         })
 
     }
+    val job = Job()
+    val uiScope = CoroutineScope(Dispatchers.Main + job)
+    private fun showUserDialog(message: String) {
+        MaterialAlertDialogBuilder(this@ListFragment.context!!)
+            .setTitle("Invalid Search")
+            .setMessage(message)
+            .setPositiveButton("Ok") { _, _ ->
+                //onConfirmUserCreate(username)
+            }
+            .create().show()
+//            .setNegativeButton("Cancel") { _, _->
+//                Toast.makeText(this, "Ope", LENGTH_SHORT).show()
+//            }
+    }
+
 
     fun observeSearchView(mapping : List<MediaItemData>, adapter: MediaItemDataAdapter){
         binding.listSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
 
             override fun onQueryTextSubmit(query: String?): Boolean {
-                val search = query!!.lowercase()
-                if(search.isEmpty())
+                Log.d("x", "onQueryTextSubmit: " + query)
+                val search = query!!
+                if (search.isEmpty())
                     return false
-
-                val fields : Array<String> = search.split(":").toTypedArray()
-                if(!fields[0].equals("search?"))
+                val searchItems: Array<String> = search.split(":").toTypedArray()
+                Log.d("x", searchItems.joinToString(","))
+                if (!searchItems[0].equals("search?"))
                     return false
+                var queryList = mutableListOf<String>()
+                var newList = listOf<MediaItemData>()
+                binding.progressBar.visibility = View.VISIBLE
+                var message = ""
+                var tables = "rolas_table"
 
-                //Fields:
-                //song, artist, genre,
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
 
-                var possibleFields : Array<String> =
-                    arrayOf("song", "year", "artist", "genre", "type", "album" )
+                    //Fields:
+
+                    var possibleFields: Array<String> =
+                        arrayOf("song", "year", "artist", "genre", "type", "album")
 
 
-                for(i in 1..fields.size step 2){
-                    var field = ""
-                    if(possibleFields.contains(fields[i])){
-                        var nextIndex = i +1
-                        var toSearch = fields[nextIndex]
-                        var rawQuery : String = "SELECT * FROM "
+                    for (i in 1 until searchItems.size step 2) {
+                        var field = ""
+                        if (possibleFields.contains(searchItems[i])) {
+                            var nextIndex = i + 1
+                            var toSearch = searchItems[nextIndex]
+                            Log.d("x", "field: " + searchItems[i] + " parameter: " + toSearch)
+
+                            when (searchItems[i]) {
+                                "album" -> {
+                                    Log.d("x", "inside album case with " + searchItems[i])
+                                    var albumId = 0
+                                    try{
+                                        albumId =mediaViewModel.generalDao.getAlbumFromName(toSearch).first().id_album
+                                    }catch (e : Exception){
+                                        message = "No album with such name found"
+                                    }
+
+                                    Log.d("x", "album query result = " + albumId)
+
+                                    queryList.add( "id_album = " + albumId)
+
+
+                                }
+                                "song" -> {
+                                    var result = 0
+                                    try{
+                                        //result = mediaViewModel.generalDao.getSongById().first().id_album
+                                    }catch (e : Exception){
+
+                                    }
+                                    //var albumId = result.first().id_album
+                                    //rawQuery += "id_album = " + albumId
+
+                                }
+                                "artist" -> {
+                                    var performerId = 0
+                                    try{
+                                        performerId =mediaViewModel.generalDao.getPerformerFromName(toSearch).first().id_performer
+                                    }catch (e : Exception){
+                                        message = "No artist with such name found"
+                                    }
+
+                                    queryList.add( "id_performer = " + performerId)
+                                }
+                                "genre" -> {
+                                    var string = " genre like '%"+searchItems[nextIndex]+"%'"
+                                    queryList.add(string)
+                                    //rawQuery += " genre LIKE " + searchItems[nextIndex]
+                                }
+                                "type" -> {
+                                    var type = 2
+                                    when(searchItems[nextIndex].lowercase()){
+                                        "unknown"->{
+                                            type = 2
+                                        }
+                                        "person"->{
+                                            type = 0
+                                        }
+                                        "group"->{
+                                            type= 1
+                                        }
+                                        else->{
+                                            message+="Invalid type"
+                                        }
+                                    }
+                                    var string = " "
+                                    queryList.add(string)
+                                    //rawQuery += " type"
+                                }
+                                else -> {
+                                    Toast.makeText(
+                                        this@ListFragment.context,
+                                        "Search query invalid, please try again",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            }
+
+                        }
+
+
+                    }
+                    var rawQuery : String= "SELECT * FROM rolas_table WHERE "+ queryList.joinToString(" AND ")
+                    Log.d("x", "query to search: " + rawQuery)
+                    var query = SimpleSQLiteQuery(
+                        rawQuery
+
+                    )
+
+
+
+                    var rawQueryResult = listOf<SongEntity>()
+                    try{
+                        rawQueryResult = mediaViewModel.rawDao.getSongsViaQuery(query)
+                    }catch (e : Exception){
+                        Log.d("x", "SQLiteException")
+
+                    }catch (e : SQLiteException){
+                        Log.d("x", "SQLiteException")
+                    }catch (e : SQLiteAbortException){
+
+                    }catch (e : android.database.SQLException){
+
+                    }catch (e : java.util.NoSuchElementException){
+                        Log.d("x", "no suck element exception")
+                    }
+
+                    if (!rawQueryResult.isNullOrEmpty()) {
+                        Log.d("x", "rawquery result  " + rawQueryResult)
+                        Log.d("x", "results after mapping " + rawQueryResult.map { it.toDomain() })
+                        newList= rawQueryResult.map { it.toDomain() }
+
+
+                    } else {
+                        Log.d("x", "rawquery result is null or empty " + rawQueryResult)
 
                     }
 
+                    Log.d("x", "result of query")
+
+                    withContext(Dispatchers.Main){
+                        binding.progressBar.visibility = View.GONE
+                        if(!newList.isEmpty()){
+                            adapter.setNewData(newList)
+                        }else{
+                            Log.d("x", "newList is empty")
+                            showUserDialog(message)
+                        }
+                    }
 
                 }
-
 
                 return true
             }
@@ -223,18 +412,19 @@ class ListFragment : Fragment() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 Log.d("x", "detected serch view input" + newText)
                 val searchText = newText.toString().lowercase()
-                if(searchText.endsWith("genre")){
 
-                }
 
                 var newList =  mapping.filter { mediaItemData ->  mediaItemData.title.lowercase().contains(searchText)}
-                Log.d("x", "mapping new size: " + mapping.size)
+                //Log.d("x", "mapping new size: " + mapping.size)
                 adapter.setNewData(newList)
                 return true
             }
 
         })
     }
+
+
+
 
 
 }

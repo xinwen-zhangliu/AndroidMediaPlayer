@@ -5,13 +5,15 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.View
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.data.models.MediaItemData
-import kotlinx.coroutines.DelicateCoroutinesApi
+import com.proyecto2_reproductor_de_musica.fragments.list.ListFragmentDirections
 import java.io.File
 
 
@@ -22,6 +24,8 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
     val songTitle = view.findViewById<TextView>(R.id.title)
     val author = view.findViewById<TextView>(R.id.text)
     val image = view.findViewById<ImageView>(R.id.image)
+
+    val moreOptions = view.findViewById<ImageButton>(R.id.moreInfoSong)
 
     var path = ""
 
@@ -34,9 +38,20 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
      * Puts respective item data from MediaItemData into the elements in view
      */
     @RequiresApi(Build.VERSION_CODES.P)
-    @OptIn(DelicateCoroutinesApi::class)
     fun render(media : MediaItemData){
 
+        moreOptions.setOnClickListener(object: View.OnClickListener{
+            override fun onClick(p0: View?) {
+                Log.d("x", "you clicked the more optiosn button on song " + media.title)
+                var action = ListFragmentDirections.actionListFragmentToSongInfoFragment(media)
+                itemView.findNavController().navigate(action)
+
+//                val activity = p0!!.context as AppCompatActivity
+//                val songInfoFragment = SongInfoFragment.newInstance(media)
+//                activity.supportFragmentManager.beginTransaction().replace(R.id.mainActivity, songInfoFragment).addToBackStack(null).commit()
+
+            }
+        })
 
         songTitle.text = media.title
 
@@ -62,24 +77,7 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
         songTitle.text = title
         var text = "$artist | $album"
         author.text = text
-        //var hasImage = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_COUNT)?.toInt()?:-1
-//        if(hasImage>0  ){
-//            var imageAtIndex:Int =
-//                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_PRIMARY)?.toInt() ?:-1
-//            //if(imageAtIndex!=-1)
-//                image.setImageBitmap(mmr.getImageAtIndex(imageAtIndex) )
-//
-//        }
 
-        //val artBytes = mmr.embeddedPicture
-
-//        if (artBytes != null) {
-//            val bm = BitmapFactory.decodeByteArray(artBytes, 0, artBytes.size)
-//            image.setImageBitmap(bm)
-//        }
-//        if(hasImage==-1){
-//            image.setImageResource(R.drawable.image)
-//        }
 
     }
 

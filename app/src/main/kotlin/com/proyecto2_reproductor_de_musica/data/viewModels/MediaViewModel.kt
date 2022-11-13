@@ -174,31 +174,12 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
                             generalDao.insertOneAlbum(albumsEntity)
                             generalDao.insertOnePerformer(performerEntity)
 
-//                            var idlist = generalDao.getLastAlbumId()
-//                            if(idlist.isNullOrEmpty()){
-//                                Log.d("ViewModel", "the fucking list is empty ")
-//                                toastStuff("the fucking list is empty", 0)
-//                            }
-//                            Log.d("x", "the id of last album$idlist")
-                           // var lastAlbum = generalDao.getLastAlbumId().first().toInt()
-                            //toastStuff("last album id:" , lastAlbum)
-                           // val lastPerformer = generalDao.getLastPerformerId().first().toInt()
-                           // toastStuff("last performer id:" , lastPerformer)
-                            //var lastAlbumId = generalDao.getLastIdAlbum()
-                            //var lastPerformerId = generalDao.getLastIdPerformer()
-//                            var lastAlbumId = generalDao.insertOneAlbum(albumsEntity)
-//                            var lastPerformerId =generalDao.insertOnePerformer(performerEntity)
-//                            Log.d("x", "the last rowid of album $lastAlbumId")
-//                            Log.d("x", "the last rowid of performer $lastPerformerId")
+
                             var albumId = generalDao.getAlbumFromName(album).first().id_album
                             var lastPerformerId =generalDao.getPerformerFromName(artist).first().id_performer
                             Log.d("x", "the lastid of album " +album + " : " + albumId)
                             Log.d("x", "the lastid of performer " +artist + " : " + lastPerformerId)
 
-//                            var lastAddedAlbum = generalDao.albumFromRow(lastAlbumId.toInt()).id_album
-//                            var lastAddedPerformer = generalDao.getPerformerById(lastPerformerId.toInt()).id_performer
-//                            Log.d("x", "the lastid of album " +lastAddedAlbum)
-//                            Log.d("x", "the lastid of performer " +lastAddedPerformer)
 
 
                             var songEntity: SongEntity = SongEntity(0, lastPerformerId, albumId, url, title, track, year, genre)

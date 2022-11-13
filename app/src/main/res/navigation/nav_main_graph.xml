@@ -9,26 +9,33 @@
         android:name="com.proyecto2_reproductor_de_musica.fragments.list.ListFragment"
         android:label="fragment_list"
         tools:layout="@layout/fragment_list" >
+
         <action
-            android:id="@+id/action_listFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+            android:id="@+id/action_listFragment_to_playingFragment"
+            app:destination="@id/playingFragment" />
         <action
-            android:id="@+id/action_listFragment_to_editFragment"
-            app:destination="@id/editFragment" />
+            android:id="@+id/action_listFragment_to_songInfoFragment"
+            app:destination="@id/songInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/playingFragment"
         android:name="com.proyecto2_reproductor_de_musica.fragments.playing.PlayingFragment"
         android:label="fragment_playing"
-        tools:layout="@layout/fragment_playing" />
+        tools:layout="@layout/fragment_playing" >
+        <action
+            android:id="@+id/action_playingFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
     <fragment
-        android:id="@+id/searchFragment"
-        android:name="com.proyecto2_reproductor_de_musica.fragments.search.SearchFragment"
-        android:label="fragment_search"
-        tools:layout="@layout/fragment_search" />
-    <fragment
-        android:id="@+id/editFragment"
-        android:name="com.proyecto2_reproductor_de_musica.fragments.edit.EditFragment"
-        android:label="fragment_edit"
-        tools:layout="@layout/fragment_edit" />
+        android:id="@+id/songInfoFragment"
+        android:name="com.proyecto2_reproductor_de_musica.fragments.edit.SongInfoFragment"
+        android:label="fragment_song_info"
+        tools:layout="@layout/fragment_song_info" >
+        <action
+            android:id="@+id/action_songInfoFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <argument
+            android:name="currentMediaItemData"
+            app:argType="com.proyecto2_reproductor_de_musica.data.models.MediaItemData" />
+    </fragment>
 </navigation>

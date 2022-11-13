@@ -53,13 +53,14 @@ class MediaItemDataAdapter (private var mediaList : List<MediaItemData>) : Recyc
 
 
 
+
+
         holder.itemView.setOnClickListener(object : View.OnClickListener{
 
             override fun onClick(v: View?) {
 
                 //Todo: set audio as playing when entering the playing view
                 //Todo: check if path is different than befores so we can start palying new song in service
-
 
                 val title = holder.songTitle.toString()
                 val subtitle = holder.author.toString()

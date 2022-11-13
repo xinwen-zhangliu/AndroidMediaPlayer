@@ -17,10 +17,17 @@ interface GeneralDao {
     @JvmSuppressWildcards
     suspend fun insertAllSongs(songsToInsert:List<SongEntity> )
 
+    @Query("SELECT * FROM rolas_table WHERE id_album =:idToSearch LIMIT 1")
+    suspend fun getSongById(idToSearch:Int): List<SongEntity>
 
-//    @Transaction
-//    @Query("SELECT * FROM rolas_table WHERE id_album = :id ")
-//    suspend fun getAlbumWithSongs(id : Int):List<AlbumWithSongs>
+    @Update
+    suspend fun updateSong(song : SongEntity)
+
+    @Delete
+    suspend fun deleteSong(song : SongEntity)
+
+
+
 
 
     //Types
@@ -53,8 +60,6 @@ interface GeneralDao {
     @Query("SELECT * FROM albums_table WHERE id_album =:idToSearch LIMIT 1")
     suspend fun getAlbumById(idToSearch:Int): AlbumsEntity
 
-    @Query("SELECT * FROM albums_table WHERE rowid =:rowId  LIMIT 1")
-    suspend fun albumFromRow(rowId: Int) : AlbumsEntity
 
 
     @Query("SELECT id_album FROM albums_table ORDER BY id_album DESC LIMIT 1")
@@ -62,6 +67,12 @@ interface GeneralDao {
 
     @Query("SELECT * FROM albums_table WHERE name =:name LIMIT 1")
     suspend fun getAlbumFromName(name : String) : List<AlbumsEntity>
+
+    @Update
+    suspend fun updateAlbum(album: AlbumsEntity )
+
+    @Delete
+    suspend fun deleteAlbum(album: AlbumsEntity)
 
 
     //Performers
@@ -87,6 +98,11 @@ interface GeneralDao {
     @Query("SELECT * FROM performer_table WHERE name =:name LIMIT 1")
     suspend fun getPerformerFromName(name : String) : List<PerformerEntity>
 
+    @Update
+    suspend fun updatePerformer(performer: PerformerEntity)
+
+    @Delete
+    suspend fun deletePerformer(performer: PerformerEntity)
 
 
 }

@@ -18,8 +18,6 @@ class MediaRepository(
     private val relationsDao: RelationsDao
 ){
 
-
-
     /**
      * Function to get all the songs in database, returns as livedata
      */

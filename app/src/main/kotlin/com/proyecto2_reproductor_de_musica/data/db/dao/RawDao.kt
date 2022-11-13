@@ -9,6 +9,6 @@ import com.proyecto2_reproductor_de_musica.data.db.entities.SongEntity
 interface RawDao {
 
     @RawQuery
-    fun getSongsViaQuery(query: SupportSQLiteQuery): SongEntity
+    fun getSongsViaQuery( query: SupportSQLiteQuery): List<SongEntity>
 }
 
