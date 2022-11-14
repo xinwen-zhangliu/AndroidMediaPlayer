@@ -7,8 +7,9 @@ This project is using the MVVM architecture, denoting the use of Models, Views a
 ###### The Music Player
 To play each media file, a Service class was created to run in the foreground, to avoid interrupting the 
 MediaPlayer when  changing fragments or minimizing, and to keep the operation running for as long as the user likes. The music will keep playing until the user
-closes the application completely.
+closes the application completely. The user can navigate other apps while still playing audio.
  A simple dialog box is shown in the notification panel when the service is started, with the name of the song and a picture if available.
+ A selected song will keep playing until user changes song.
 
 ## Database
 This project uses the google recommended library, Room. Each entity represents a table in the database, with relations classes in retrieveing and viewing information.
