@@ -3,14 +3,15 @@
 ## Design of the application
 This project is using the MVVM architecture, denoting the use of Models, Views and ViewModels. To organize the fragments, a navigation grpah has been used. 
 
+
 ###### The Music Player
 To play each media file, a Service class was created to run in the foreground, to avoid interrupting the 
-MediaPlayer when  changing fragments or minimizing, and to keep the operation running for as long as the user likes. 
- A simple dialog box is shown in the notification panel when the service is started. 
+MediaPlayer when  changing fragments or minimizing, and to keep the operation running for as long as the user likes. The music will keep playing until the user
+closes the application completely.
+ A simple dialog box is shown in the notification panel when the service is started, with the name of the song and a picture if available.
 
 ## Database
-This project uses the google recommended library, Room. 
-
+This project uses the google recommended library, Room. Each entity represents a table in the database, with relations classes in retrieveing and viewing information.
 
 
 
@@ -32,7 +33,7 @@ song, album, artist, year, genre
 
 
 ## Adding and editing rows in database tables
-To edit Song, Artist or Album information, click ont he thredots beside the item.
+To edit Song, Artist or Album information, click ont he three dots beside the item.
 On the botton right side you'll also fin two buttons,the oone on the left opens a new list of the performers available in the data base.
 And according to their type you'll be able to edi the information, that's why you must choose a type different than unknown to be able to edit the information.
 The type information will be saved from the Song infomation edit view, so be careful to edit in that one first before going to the list of performers.
