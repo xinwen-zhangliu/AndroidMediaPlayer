@@ -39,6 +39,6 @@ And according to their type you'll be able to edi the information, that's why yo
 The type information will be saved from the Song infomation edit view, so be careful to edit in that one first before going to the list of performers.
 
 
-##Adding Media
-The application automatically searches for audio files in the device, on both the internal and external storage. But if you've added new songs or if the songs you want do not show up, you can add a folfer path after clicking the botton on the bottom right corner.
-Deleted songs are automatically deleted from the data at the start of the application. 
+## Adding Media
+The application automatically searches for audio files in the device, on both the internal and external storage. But if you've added new songs or if the songs you want do not show up, you can add a folfer path after clicking the botton on the bottom right corner. 
+Deleted songs are automatically deleted from the database at the start of the application. 
