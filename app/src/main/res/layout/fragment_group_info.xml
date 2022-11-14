@@ -2,120 +2,109 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginRight="16dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginBottom="16dp"
+    tools:context=".fragments.edit.GroupInfoFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.edit.GroupInfoFragment">
+    android:clickable="true"
+    android:background="@color/design_default_color_background">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/groupDataTitle"
+        android:id="@+id/groupData_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:ellipsize="end"
         android:maxLines="1"
+
         android:paddingHorizontal="16dp"
         android:paddingVertical="4dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="?android:attr/textColorSecondary"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="?android:attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="Group Data Edit" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Group Data" />
 
     <com.google.android.material.textfield.TextInputLayout
-       android:id="@+id/name"
-        android:layout_width="409dp"
-        android:layout_height="40dp"
+        android:id="@+id/groupName_layout"
+        android:layout_width="377dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/groupDataTitle"
-        android:layout_marginTop="10dp">
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@+id/groupData_title">
 
         <com.google.android.material.textfield.TextInputEditText
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:imeOptions="actionDone"
+            android:hint="Name"
             android:maxLines="1"
-            android:hint="Name" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/startDate"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="date"
-        tools:layout_editor_absoluteX="86dp"
-        tools:layout_editor_absoluteY="110dp"
-        android:hint="Start Date"/>
 
-    <EditText
-        android:id="@+id/endDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="End Date"
-        android:inputType="date"
-        app:layout_constraintTop_toBottomOf="@id/startDate"
-        tools:layout_editor_absoluteX="86dp" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/membersTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="68dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="4dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="?android:attr/textColorSecondary"
-        app:layout_constraintEnd_toStartOf="@+id/addMember_btn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/endDate"
-        tools:text="Group Members" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/listOfMembers"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/membersTitle"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/addMember_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Member"
-        app:layout_constraintBottom_toTopOf="@+id/listOfMembers"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/endDate" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/saveGroupInfo_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_save_24" />
+        app:srcCompat="@drawable/ic_baseline_save_24"
+        app:fabCustomSize="50dp"/>
+
+
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/startDate_layout"
+        android:layout_width="377dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@+id/groupName_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:imeOptions="actionDone"
+            android:inputType="date"
+            android:maxLines="1"
+            android:hint="Start Date" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/endDate_layout"
+        android:layout_width="377dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@+id/startDate_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/genre_edtText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:inputType="date"
+            android:maxLines="1"
+            android:imeOptions="actionDone"
+            android:hint="End Date" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

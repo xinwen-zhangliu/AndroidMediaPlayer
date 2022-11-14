@@ -320,7 +320,7 @@ class ListFragment : Fragment() {
                                 "song" -> {
                                     var result = 0
                                     try{
-                                        //result = mediaViewModel.generalDao.getSongById().first().id_album
+                                        result = mediaViewModel.generalDao.getSongByName(searchItems[nextIndex]).first().id_album
                                     }catch (e : Exception){
 
                                     }
@@ -385,7 +385,7 @@ class ListFragment : Fragment() {
                     Log.d("x", "query to search: " + rawQuery)
                     var query = SimpleSQLiteQuery(
                         rawQuery
-                            //"SELECT * FROM rolas_table NATURAL JOIN performer_table"
+
                     )
 
 

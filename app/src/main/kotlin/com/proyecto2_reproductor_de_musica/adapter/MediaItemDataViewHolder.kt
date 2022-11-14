@@ -19,6 +19,7 @@ import com.proyecto2_reproductor_de_musica.fragments.list.ListFragmentDirections
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 
@@ -63,19 +64,25 @@ class MediaItemDataViewHolder(view :View, private val viewModel : MediaViewModel
             var resultPerfomer = viewModel.generalDao.getPerformerById(media.author)
             var resultSong = viewModel.generalDao.getSongById(media.mediaId)
 
+            var album = ""
+            var performer = ""
+
             if(!resultSong.isNullOrEmpty()){
                 var file = File(resultSong.first().path)
                 if(file.exists()){
                     if(!resultAlbum.isEmpty() && !resultPerfomer.isEmpty()){
-                        var album = resultAlbum.first().name
-                        var performer = resultPerfomer.first().name
-                        author.text = performer + " | " + album
+                        album = resultAlbum.first().name
+                        performer = resultPerfomer.first().name
+
                     }
                 }else{
                     songTitle.text = ""
                     author.text = ""
                     viewModel.generalDao.deleteSong(resultSong.first())
                 }
+            }
+            withContext(Dispatchers.Main){
+                author.text = performer + " | " + album
             }
         }
 

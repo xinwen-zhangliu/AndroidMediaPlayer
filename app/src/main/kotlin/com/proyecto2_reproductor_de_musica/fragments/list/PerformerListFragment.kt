@@ -1,6 +1,7 @@
 package com.proyecto2_reproductor_de_musica.fragments.list
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +50,7 @@ class PerformerListFragment : Fragment() {
                 if(!foundPerformers){
                     showUserDialog("No performers found")
                 }else{
-                    showList(performers)
+                    showList(performers, view)
                     search(view, performers)
                 }
             }
@@ -60,28 +61,22 @@ class PerformerListFragment : Fragment() {
         return binding.root
     }
 
-    fun showList(list: List<PerformerEntity>){
+    fun showList(list: List<PerformerEntity>, view : View){
         val recyclerView = binding.root.findViewById<RecyclerView>(R.id.performer_recyclerView)
         var layoutManager = LinearLayoutManager(activity)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = layoutManager
         adapter  = PerformerItemAdapter(list)
         recyclerView.adapter= adapter
-
-
-
-
-    }
-
-    fun search(view : View, list: List<PerformerEntity> ){
         var searchView = view.findViewById<SearchView>(R.id.performerList_searchView)
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+        binding.performerListSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                Log.d("x", "performer list search : "+ newText)
                 val searchText = newText.toString().lowercase()
                 var newList =  list.filter { performerEntity ->  performerEntity.name.lowercase().contains(searchText)}
                 adapter.setNewData(newList)
@@ -90,6 +85,14 @@ class PerformerListFragment : Fragment() {
             }
 
         })
+
+
+
+
+    }
+
+    fun search(view : View, list: List<PerformerEntity> ){
+
     }
 
 
