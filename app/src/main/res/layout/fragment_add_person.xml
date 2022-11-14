@@ -2,14 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".fragments.edit.GroupInfoFragment"
+    tools:context=".fragments.edit.AddPersonFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
     android:background="@color/design_default_color_background">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/groupData_title"
+        android:id="@+id/personData_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -23,24 +23,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Group Data" />
+        android:text="Person Data " />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/groupName_layout"
+        android:id="@+id/stageName_layout"
         android:layout_width="377dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:layout_constraintTop_toBottomOf="@+id/groupData_title">
+        app:layout_constraintTop_toBottomOf="@+id/personData_title">
 
         <com.google.android.material.textfield.TextInputEditText
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
-            android:hint="Name"
+            android:hint="Stage Name"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -50,7 +50,7 @@
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/saveGroupInfo_btn"
+        android:id="@+id/savePersonInfo_btn"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:clickable="true"
@@ -60,18 +60,37 @@
         app:fabCustomSize="50dp"/>
 
 
-
-
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/startDate_layout"
+        android:id="@+id/personRealName_layout"
         android:layout_width="377dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:layout_constraintTop_toBottomOf="@+id/groupName_layout">
+        app:layout_constraintTop_toBottomOf="@+id/stageName_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:inputType="text"
+            android:maxLines="1"
+            android:hint="Real Name" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/birthDate_layout"
+        android:layout_width="377dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@+id/personRealName_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -80,86 +99,31 @@
             android:imeOptions="actionDone"
             android:inputType="date"
             android:maxLines="1"
-            android:hint="Start Date" />
+            android:hint="Birth Date" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/endDate_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/deathDate_layout"
         android:layout_width="377dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startDate_layout">
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@+id/birthDate_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/genre_edtText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="End Date"
-            android:imeOptions="actionDone"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:inputType="date"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+            android:imeOptions="actionDone"
+            android:hint="Death Date" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Spinner
-        android:id="@+id/personsGroup_spinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Choose member to add"
-        app:layout_constraintBottom_toTopOf="@+id/personsGroup_spinner"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/endDate_layout"
-        app:layout_constraintVertical_bias="0.478" />
-
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/membersList_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="4dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="?android:attr/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/personsGroup_spinner"
-        android:text="Members" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="379dp"
-        android:layout_height="326dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/membersList_title"
-        app:layout_constraintVertical_bias="0.238" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

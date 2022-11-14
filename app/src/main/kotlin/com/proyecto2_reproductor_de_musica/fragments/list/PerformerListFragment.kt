@@ -57,6 +57,12 @@ class PerformerListFragment : Fragment() {
         }
 
 
+        binding.addPersonBtn.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(p0: View?) {
+
+            }
+        })
+
         //return super.onCreateView(inflater, container, savedInstanceState)
         return binding.root
     }
@@ -85,6 +91,8 @@ class PerformerListFragment : Fragment() {
             }
 
         })
+
+
 
 
 

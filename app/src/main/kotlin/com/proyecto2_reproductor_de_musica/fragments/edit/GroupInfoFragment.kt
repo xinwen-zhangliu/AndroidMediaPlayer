@@ -1,9 +1,13 @@
 package com.proyecto2_reproductor_de_musica.fragments.edit
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -14,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.data.db.entities.GroupsEntity
 import com.proyecto2_reproductor_de_musica.data.db.entities.PerformerEntity
+import com.proyecto2_reproductor_de_musica.data.db.entities.PersonsEntity
 import com.proyecto2_reproductor_de_musica.data.viewModels.MediaViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -68,6 +73,7 @@ class GroupInfoFragment : Fragment() {
                 Toast.makeText(view.context, "Saved!", Toast.LENGTH_SHORT).show()
             }
         })
+        setDataToSpinner(view)
         return view
     }
     private fun setData(view : View){
@@ -97,6 +103,34 @@ class GroupInfoFragment : Fragment() {
         }
 
 
+
+    }
+
+    fun setDataToSpinner(view : View){
+        var persons = emptyArray<PersonsEntity>()
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
+            persons = mediaViewModel.generalDao.getAllPersons().toTypedArray()
+        }
+
+        val spinner: Spinner = view.findViewById(R.id.personsGroup_spinner)
+// Create an ArrayAdapter using the string array and a default spinner layout
+
+        if(!persons.isNullOrEmpty()){
+            var adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_item, persons)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+        }
+
+        spinner.onItemSelectedListener=object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                Log.d("x", "selected person " +persons[p2] )
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+        }
 
     }
     fun checkUnknownString(string : String) : String{

@@ -313,7 +313,7 @@ class ListFragment : Fragment() {
 
                                     Log.d("x", "album query result = " + albumId)
 
-                                    queryList.add( "id_album = " + albumId  )
+                                    queryList.add( " id_album = " + albumId  )
 
 
                                 }
@@ -322,8 +322,9 @@ class ListFragment : Fragment() {
                                     try{
                                         result = mediaViewModel.generalDao.getSongByName(searchItems[nextIndex]).first().id_album
                                     }catch (e : Exception){
-
+                                        message+="No song with such name"
                                     }
+                                    queryList.add(" id_rola = " + result)
 
 
                                 }

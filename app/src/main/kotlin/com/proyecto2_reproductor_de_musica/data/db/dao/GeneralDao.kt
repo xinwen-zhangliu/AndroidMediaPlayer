@@ -23,7 +23,7 @@ interface GeneralDao {
     @Delete
     suspend fun deleteSong(song : SongEntity)
 
-    @Query("SELECT * FROM rolas_table WHERE title=:name LIKE '%' LIMIT 1")
+    @Query("SELECT * FROM rolas_table WHERE title=:name LIMIT 1")
     suspend fun getSongByName(name: String) : List<SongEntity>
 
 
@@ -117,6 +117,9 @@ interface GeneralDao {
 
     @Query("SELECT * FROM persons_table WHERE stage_name =:name LIMIT 1")
     suspend fun getPersonByName(name : String) : List<PersonsEntity>
+
+    @Query("SELECT * FROM persons_table")
+    suspend fun getAllPersons() : List<PersonsEntity>
 
 
 

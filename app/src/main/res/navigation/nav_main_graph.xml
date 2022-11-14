@@ -57,6 +57,9 @@
         <action
             android:id="@+id/action_performerListFragment_to_groupInfoFragment"
             app:destination="@id/groupInfoFragment" />
+        <action
+            android:id="@+id/action_performerListFragment_to_addPersonFragment"
+            app:destination="@id/addPersonFragment" />
     </fragment>
     <fragment
         android:id="@+id/personInfoFragment"
@@ -84,4 +87,9 @@
             android:name="currentPerformer"
             app:argType="com.proyecto2_reproductor_de_musica.data.db.entities.PerformerEntity" />
     </fragment>
+    <fragment
+        android:id="@+id/addPersonFragment"
+        android:name="com.proyecto2_reproductor_de_musica.AddPersonFragment"
+        android:label="fragment_add_person"
+        tools:layout="@layout/fragment_add_person" />
 </navigation>
