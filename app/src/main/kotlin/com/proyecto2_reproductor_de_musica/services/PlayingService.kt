@@ -30,7 +30,7 @@ class PlayingService : Service() {
     var songTitle : String = ""
     var artist : String = ""
     var album : String = ""
-    lateinit var image : Bitmap
+    var image : Bitmap? = null
     //--------------------------------->
 
     //--------------------------------//
@@ -170,7 +170,8 @@ class PlayingService : Service() {
         val contentView = RemoteViews(packageName, R.layout.layout_notification_expanded)
         contentView.setTextViewText(R.id.title, songTitle)
         contentView.setImageViewResource(R.id.largeIcon, R.drawable.image)
-        contentView.setImageViewBitmap(R.id.largeIcon, image)
+        if(this.image != null)
+            contentView.setImageViewBitmap(R.id.largeIcon, image)
         contentView.setTextViewText(R.id.notificationSubtitle, "$artist | $album")
         return contentView
 

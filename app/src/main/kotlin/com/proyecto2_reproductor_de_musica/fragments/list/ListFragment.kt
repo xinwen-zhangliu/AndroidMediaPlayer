@@ -21,7 +21,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -53,11 +52,9 @@ class ListFragment : Fragment() {
     private lateinit var mediaViewModel : MediaViewModel
     lateinit var binding : FragmentListBinding
 
-    private  var temporaryList :List<MediaItemData> = mutableListOf()
 
     private lateinit var adapter: MediaItemDataAdapter
-    private var loaded:MutableLiveData<Boolean> = MutableLiveData()
-    private var result : MutableLiveData<List<SongEntity>> = MutableLiveData()
+
 
 
 
@@ -117,6 +114,22 @@ class ListFragment : Fragment() {
 
              m_Text = input.text.toString()
             mediaViewModel.getMediaFromFiles(m_Text)
+            mediaViewModel.finishedReading.observe(viewLifecycleOwner, Observer<Boolean>{   boolean->
+
+                if(mediaViewModel.foundPath){
+                    showUserDialog("Found path")
+                    var allSongs = mediaViewModel.generalDao.getAllSongs().value
+                    if(!allSongs.isNullOrEmpty()){
+                        adapter.setNewData(allSongs.map { it.toDomain() })
+                    }else{
+                        showUserDialog("Nothing found ")
+                    }
+                }else{
+
+                    showUserDialog("Invalid Path")
+                }
+
+            })
         })
         builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
 
@@ -161,7 +174,7 @@ class ListFragment : Fragment() {
             } else {
                 activity!!.startService(Intent(this.context, PlayingService::class.java ))
             }
-            //activity!!.startForegroundService(Intent(this.context, PlayingService::class.java ))
+
         }
     }
     private fun isPlayingServiceRunning(mClass : Class<PlayingService>) : Boolean{
@@ -192,10 +205,6 @@ class ListFragment : Fragment() {
 
         mediaViewModel.readAllData.observe(viewLifecycleOwner, Observer<List<SongEntity>> {songEntity ->
 
-
-
-            //adapter = MediaItemDataAdapter(mapping)
-            //if(mediaViewModel.readAllData.value.isNullOrEmpty()){
             if(mediaViewModel.readAllData.value.isNullOrEmpty()){
                 mediaViewModel.getMediaFromFiles(null)
                 Toast.makeText(this.context, " There is nothing in the database so we are reading from files", Toast.LENGTH_SHORT).show()
@@ -203,7 +212,7 @@ class ListFragment : Fragment() {
                     if(boolean){
                         if(!mediaViewModel.readAllData.value.isNullOrEmpty()){
                             mapping =  mediaViewModel.generalDao.getAllSongs().value!!.map { it.toDomain() }
-                            adapter = MediaItemDataAdapter(mapping)
+                            adapter = MediaItemDataAdapter(mapping, mediaViewModel)
                             recyclerView.adapter= adapter
                             adapter.setNewData(mapping)
                             binding.progressBar.visibility = View.GONE
@@ -213,15 +222,21 @@ class ListFragment : Fragment() {
 
                         }
 
+                    }
 
+                    Log.d("x","Media view model finished reading")
+                    if(!mediaViewModel.foundPath){
+                        showUserDialog("Invalid path")
                     }
 
                 })
 
             }else{
+
+
                 mapping = songEntity.map { it.toDomain() }
                 Toast.makeText(this.context, "Found data from Database", Toast.LENGTH_SHORT).show()
-                adapter = MediaItemDataAdapter(mapping)
+                adapter = MediaItemDataAdapter(mapping, mediaViewModel)
                 recyclerView.adapter= adapter
                 //loaded=true
                 observeSearchView(mapping,adapter)
@@ -243,7 +258,6 @@ class ListFragment : Fragment() {
             .setTitle("Invalid Search")
             .setMessage(message)
             .setPositiveButton("Ok") { _, _ ->
-                //onConfirmUserCreate(username)
             }
             .create().show()
 //            .setNegativeButton("Cancel") { _, _->
@@ -310,8 +324,7 @@ class ListFragment : Fragment() {
                                     }catch (e : Exception){
 
                                     }
-                                    //var albumId = result.first().id_album
-                                    //rawQuery += "id_album = " + albumId
+
 
                                 }
                                 "artist" -> {
@@ -372,7 +385,7 @@ class ListFragment : Fragment() {
                     Log.d("x", "query to search: " + rawQuery)
                     var query = SimpleSQLiteQuery(
                         rawQuery
-
+                            //"SELECT * FROM rolas_table NATURAL JOIN performer_table"
                     )
 
 

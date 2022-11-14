@@ -26,3 +26,6 @@ data class MediaItemData(
  */
     fun SongEntity.toDomain() = MediaItemData(mediaId =id_rola,title = title, author = id_performer , path = path, album = id_album)
 
+fun getArtistName():String{
+    return ""
+}

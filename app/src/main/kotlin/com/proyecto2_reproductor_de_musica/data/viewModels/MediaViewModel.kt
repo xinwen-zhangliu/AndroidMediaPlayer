@@ -39,7 +39,7 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
     val readAllData : LiveData<List<SongEntity>>
 
     private val repository : MediaRepository
-    var foundPath = true
+    var foundPath = false
     private val  mmr : MediaMetadataRetriever = MediaMetadataRetriever()
      var generalDao : GeneralDao
      var rawDao: RawDao
@@ -126,9 +126,15 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
                 collectionList.clear()
                 try{
                     var file = File(path)
-                    if(file.exists()){
-                        var uri = Uri.fromFile(file)
-                        collectionList.add(uri)
+                    if(file.isDirectory){
+                        Log.d("x", "new path is a real directory")
+                        //if(file.canRead()){
+                            var uri = Uri.fromFile(file)
+                            collectionList.add(uri)
+                            foundPath= true
+                       // }else{
+                            //foundPath= false
+                       // }
                     }else{
                         foundPath= false
                     }
@@ -137,78 +143,81 @@ class MediaViewModel(application : Application): AndroidViewModel(application) {
                 }
 
             }
-            for(uri in collectionList){
-                var cursor = getApplication<MusicPlayerApp>().contentResolver.query(
-                    collection,
-                    projection,
-                    selection,
-                    null,
-                    null
-                )
+            if(foundPath || path.isNullOrEmpty()){
+                for(uri in collectionList){
+                    var cursor = getApplication<MusicPlayerApp>().contentResolver.query(
+                        collection,
+                        projection,
+                        selection,
+                        null,
+                        null
+                    )
 
 
-                if(cursor != null){
-                    if(cursor.moveToFirst())
-                        do{
-                            //Toast.makeText(getApplication(), "Moving cursor,  ViewModel", Toast.LENGTH_SHORT ).show()
+                    if(cursor != null){
+                        if(cursor.moveToFirst())
+                            do{
+                                //Toast.makeText(getApplication(), "Moving cursor,  ViewModel", Toast.LENGTH_SHORT ).show()
 
-                            var url = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA))
-                            if(!url.isNullOrEmpty()){
+                                var url = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA))
+                                if(!url.isNullOrEmpty()){
 
-                                try {
-                                    var file = File(url)
-                                    var uri= Uri.fromFile(file)
-                                    mmr.setDataSource(getApplication(), uri)
-                                }catch (e : Exception){
-                                    continue
+                                    try {
+                                        var file = File(url)
+                                        var uri= Uri.fromFile(file)
+                                        mmr.setDataSource(getApplication(), uri)
+                                    }catch (e : Exception){
+                                        continue
+                                    }
+
                                 }
-
-                            }
-                            var title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).toString()
-                            if(title.isEmpty())
-                                title =  cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME))
-                            var artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toString()
-                            if(artist.isEmpty())
-                                artist = "unknown"
-                            var track:Int = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)?.toInt()?: 0
-                            var year : Int = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)?.toInt()?: 0
-                            var genre = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE).toString()
-                            if(genre.isEmpty())
-                                genre = "unknown"
-                            var albumPath = url.subSequence(0, url.lastIndexOf('/'))
-                            var album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).toString()
-                            if(album.isEmpty())
-                                album = "unknown"
+                                var title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).toString()
+                                if(title.isEmpty())
+                                    title =  cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME))
+                                var artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toString()
+                                if(artist.isEmpty())
+                                    artist = "unknown"
+                                var track:Int = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)?.toInt()?: 0
+                                var year : Int = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)?.toInt()?: 0
+                                var genre = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE).toString()
+                                if(genre.isEmpty())
+                                    genre = "unknown"
+                                var albumPath = url.subSequence(0, url.lastIndexOf('/'))
+                                var album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).toString()
+                                if(album.isEmpty())
+                                    album = "unknown"
 
 
 
-                            var performerEntity: PerformerEntity = PerformerEntity(0,2, artist)
-                            var albumsEntity: AlbumsEntity = AlbumsEntity(0,albumPath.toString(),album, year)
+                                var performerEntity: PerformerEntity = PerformerEntity(0,2, artist)
+                                var albumsEntity: AlbumsEntity = AlbumsEntity(0,albumPath.toString(),album, year)
 
 
 
-                            generalDao.insertOneAlbum(albumsEntity)
-                            generalDao.insertOnePerformer(performerEntity)
+                                generalDao.insertOneAlbum(albumsEntity)
+                                generalDao.insertOnePerformer(performerEntity)
 
 
-                            var albumId = generalDao.getAlbumFromName(album).first().id_album
-                            var lastPerformerId =generalDao.getPerformerFromName(artist).first().id_performer
-                            Log.d("x", "the lastid of album " +album + " : " + albumId)
-                            Log.d("x", "the lastid of performer " +artist + " : " + lastPerformerId)
-
-
-
-                            var songEntity: SongEntity = SongEntity(0, lastPerformerId, albumId, url, title, track, year, genre)
-                            MediaDataProvider.songsList.add(songEntity)
+                                var albumId = generalDao.getAlbumFromName(album).first().id_album
+                                var lastPerformerId =generalDao.getPerformerFromName(artist).first().id_performer
+                                Log.d("x", "the lastid of album " +album + " : " + albumId)
+                                Log.d("x", "the lastid of performer " +artist + " : " + lastPerformerId)
 
 
 
-                        }while(cursor.moveToNext())
-                    cursor.close()
-                    repository.insertMedia(MediaDataProvider.songsList)
+                                var songEntity: SongEntity = SongEntity(0, lastPerformerId, albumId, url, title, track, year, genre)
+                                MediaDataProvider.songsList.add(songEntity)
+
+
+
+                            }while(cursor.moveToNext())
+
+                        cursor.close()
+                        repository.insertMedia(MediaDataProvider.songsList)
+
+                    }
 
                 }
-
             }
 
             withContext(Dispatchers.Main){

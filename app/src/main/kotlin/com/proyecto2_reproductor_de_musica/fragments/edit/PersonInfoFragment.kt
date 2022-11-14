@@ -4,13 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputLayout
 import com.proyecto2_reproductor_de_musica.R
+import com.proyecto2_reproductor_de_musica.data.db.entities.PerformerEntity
+import com.proyecto2_reproductor_de_musica.data.db.entities.PersonsEntity
+import com.proyecto2_reproductor_de_musica.data.viewModels.MediaViewModel
+import com.proyecto2_reproductor_de_musica.databinding.FragmentGroupInfoBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -18,43 +27,100 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class PersonInfoFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val args by navArgs<PersonInfoFragmentArgs>()
+    lateinit var  currentPerformer : PerformerEntity
+    lateinit var binding: FragmentGroupInfoBinding
+    private lateinit var mediaViewModel : MediaViewModel
 
+
+
+    var isInDatabase = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_person_info, container, false)
+        currentPerformer= args.currentPerformer
+       // binding = FragmentGroupInfoBinding.inflate(inflater, container, false)
+        val thisView = inflater.inflate(R.layout.fragment_person_info, container, false)
+        mediaViewModel = ViewModelProvider(this).get(MediaViewModel::class.java)
+        setData(thisView)
+        val saveBtn = thisView.findViewById<FloatingActionButton>(R.id.savePersonInfo_btn)
+
+        saveBtn.setOnClickListener(object: View.OnClickListener{
+            override fun onClick(p0: View?) {
+                val stageName = thisView.findViewById<TextInputLayout>(R.id.stageName_layout)
+                val realName = thisView.findViewById<TextInputLayout>(R.id.personRealName_layout)
+                val birthDate = thisView.findViewById<TextInputLayout>(R.id.birthDate_layout)
+                val deathDate = thisView.findViewById<TextInputLayout>(R.id.deathDate_layout)
+                val person = PersonsEntity(
+                    0,
+                    checkUnknownString(stageName.editText?.text.toString()),
+                    checkUnknownString(realName.editText?.text.toString()),
+                    checkUnknownString(birthDate.editText?.text.toString()),
+                    checkUnknownString(deathDate.editText?.text.toString())
+                )
+
+                val performer = PerformerEntity(
+                    currentPerformer.id_performer,
+                    currentPerformer.id_type,
+                    checkUnknownString(stageName.editText?.text.toString()),
+                )
+
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
+                    if(isInDatabase){
+                        mediaViewModel.generalDao.updatePersonData(person)
+                    }else{
+                        mediaViewModel.generalDao.insertPerson(person)
+                    }
+                    mediaViewModel.generalDao.updatePerformer(performer)
+                }
+
+                Toast.makeText(thisView.context, "Saved!", Toast.LENGTH_SHORT).show()
+            }
+        })
+        return thisView
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PersonInfoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PersonInfoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
+    private fun setData(thisView : View){
+        val stageName = thisView.findViewById<TextInputLayout>(R.id.stageName_layout)
+        val realName = thisView.findViewById<TextInputLayout>(R.id.personRealName_layout)
+        val birthDate = thisView.findViewById<TextInputLayout>(R.id.birthDate_layout)
+        val deathDate = thisView.findViewById<TextInputLayout>(R.id.deathDate_layout)
+        var person : PersonsEntity? = null
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
+            var result = mediaViewModel.generalDao.getPersonByName(currentPerformer.name)
+            if(!result.isNullOrEmpty()){
+                //the person is already in database
+                person = result.first()
+                isInDatabase = true
+            }
+
+            withContext(Dispatchers.Main){
+
+                if(isInDatabase){
+
+                    stageName.editText?.setText(person!!.stage_name)
+                    realName.editText?.setText(person!!.real_name)
+                    birthDate.editText?.setText(person!!.birth_date)
+                    deathDate.editText?.setText(person!!.death_date)
+                }else{
+                    stageName.editText?.setText(currentPerformer.name)
                 }
             }
+
+        }
+
+
+
     }
+    fun checkUnknownString(string : String) : String{
+        if(string.isNullOrEmpty())
+            return "unknown"
+        return string
+    }
+
+
+
 }

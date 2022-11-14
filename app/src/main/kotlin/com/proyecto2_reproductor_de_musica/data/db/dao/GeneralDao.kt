@@ -76,6 +76,9 @@ interface GeneralDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertOnePerformer(performer : PerformerEntity) : Long
 
+    @Query("SELECT * FROM performer_table ")
+    suspend fun getAllPerformers():List<PerformerEntity>
+
     @Query("SELECT MAX(id_performer) FROM performer_table")
     suspend fun getLastIdPerformer():Int
 
@@ -110,6 +113,9 @@ interface GeneralDao {
 
     @Delete
     suspend fun deletePerson(person : PersonsEntity)
+
+    @Query("SELECT * FROM persons_table WHERE stage_name =:name LIMIT 1")
+    suspend fun getPersonByName(name : String) : List<PersonsEntity>
 
 
 }

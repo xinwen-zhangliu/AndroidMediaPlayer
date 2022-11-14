@@ -50,7 +50,7 @@
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/save_btn"
+        android:id="@+id/savePersonInfo_btn"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:clickable="true"

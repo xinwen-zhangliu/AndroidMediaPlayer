@@ -7,28 +7,34 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.data.models.MediaItemData
+import com.proyecto2_reproductor_de_musica.data.viewModels.MediaViewModel
 import com.proyecto2_reproductor_de_musica.fragments.playing.PlayingFragment
 import java.io.File
 
 /**
  * Adapter for displaying the items in the Recycler View
  */
-class MediaItemDataAdapter (private var mediaList : List<MediaItemData>) : RecyclerView.Adapter<MediaItemDataViewHolder>(){
+class MediaItemDataAdapter (private var mediaList : List<MediaItemData>,private val viewModel : MediaViewModel) : RecyclerView.Adapter<MediaItemDataViewHolder>(){
 
     private lateinit var parent : ViewGroup
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemDataViewHolder {
 
         this.parent = parent
         val layoutInflater = LayoutInflater.from(parent.context )
+        var  view = layoutInflater.inflate(R.layout.item_list_big, parent, false)
 
-        return MediaItemDataViewHolder(layoutInflater.inflate(R.layout.item_list_big, parent, false))
+
+
+        return MediaItemDataViewHolder(view, viewModel)
 
     }
 
@@ -51,29 +57,38 @@ class MediaItemDataAdapter (private var mediaList : List<MediaItemData>) : Recyc
             Log.d("x", "error in ViewHolder")
         }
 
+        if(holder.itemView.findViewById<TextView>(R.id.title).equals("")
+            && holder.itemView.findViewById<TextView>(R.id.text).equals("") ){
+            holder.itemView.visibility = View.GONE
+            holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
+        }else{
+            holder.itemView.setOnClickListener(object : View.OnClickListener{
 
+                override fun onClick(v: View?) {
 
+                    //Todo: set audio as playing when entering the playing view
+                    //Todo: check if path is different than befores so we can start palying new song in service
 
-
-        holder.itemView.setOnClickListener(object : View.OnClickListener{
-
-            override fun onClick(v: View?) {
-
-                //Todo: set audio as playing when entering the playing view
-                //Todo: check if path is different than befores so we can start palying new song in service
-
-                val title = holder.songTitle.toString()
-                val subtitle = holder.author.toString()
-                val path = holder.path
-                Log.d("x", "item clicked" + title + path)
+                    val title = holder.songTitle.toString()
+                    val subtitle = holder.author.toString()
+                    val path = holder.path
+                    Log.d("x", "item clicked" + title + path)
 
                     val activity = v!!.context as AppCompatActivity
                     val playingFragment =  PlayingFragment.newInstance(title , subtitle, path)
                     activity.supportFragmentManager.beginTransaction().replace(R.id.mainActivity, playingFragment).addToBackStack(null).commit()
 
 
-            }
-        })
+                }
+            })
+        }
+
+
+
+
+
+
+
     }
 
     fun getImage(item: MediaItemData): ByteArray? {

@@ -1,5 +1,6 @@
 package com.proyecto2_reproductor_de_musica.adapter
 
+import android.annotation.SuppressLint
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -13,14 +14,19 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.proyecto2_reproductor_de_musica.R
 import com.proyecto2_reproductor_de_musica.data.models.MediaItemData
+import com.proyecto2_reproductor_de_musica.data.viewModels.MediaViewModel
 import com.proyecto2_reproductor_de_musica.fragments.list.ListFragmentDirections
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 
 
 /**
  * Renders the view from MediaItemData instances
  */
-class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
+class MediaItemDataViewHolder(view :View, private val viewModel : MediaViewModel)
+    :RecyclerView.ViewHolder(view){
     val songTitle = view.findViewById<TextView>(R.id.title)
     val author = view.findViewById<TextView>(R.id.text)
     val image = view.findViewById<ImageView>(R.id.image)
@@ -33,10 +39,10 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
 
 
 
-
     /**
      * Puts respective item data from MediaItemData into the elements in view
      */
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)
     fun render(media : MediaItemData){
 
@@ -52,12 +58,33 @@ class MediaItemDataViewHolder(view :View):RecyclerView.ViewHolder(view){
             }
         })
 
+        GlobalScope.launch(Dispatchers.IO) {
+            var resultAlbum = viewModel.generalDao.getAlbumById(media.album)
+            var resultPerfomer = viewModel.generalDao.getPerformerById(media.author)
+            var resultSong = viewModel.generalDao.getSongById(media.mediaId)
+
+            if(!resultSong.isNullOrEmpty()){
+                var file = File(resultSong.first().path)
+                if(file.exists()){
+                    if(!resultAlbum.isEmpty() && !resultPerfomer.isEmpty()){
+                        var album = resultAlbum.first().name
+                        var performer = resultPerfomer.first().name
+                        author.text = performer + " | " + album
+                    }
+                }else{
+                    songTitle.text = ""
+                    author.text = ""
+                    viewModel.generalDao.deleteSong(resultSong.first())
+                }
+            }
+        }
+
         songTitle.text = media.title
 
 
         this.path = media.path
 
-        getLabels(media)
+       // getLabels(media)
 
     }
 
