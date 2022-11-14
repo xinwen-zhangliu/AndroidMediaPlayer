@@ -107,23 +107,37 @@ class GroupInfoFragment : Fragment() {
     }
 
     fun setDataToSpinner(view : View){
-        var persons = emptyArray<PersonsEntity>()
+        var persons : List<PersonsEntity>? = null
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
-            persons = mediaViewModel.generalDao.getAllPersons().toTypedArray()
+            persons = mediaViewModel.generalDao.getAllPersons()
         }
 
         val spinner: Spinner = view.findViewById(R.id.personsGroup_spinner)
 // Create an ArrayAdapter using the string array and a default spinner layout
 
-        if(!persons.isNullOrEmpty()){
-            var adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_item, persons)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
-        }
+        var temp = arrayOf("person1", "person2", "person3")
+
+
+        var adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_item, temp)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+
+//        var personNames = mutableListOf<String>()
+//        persons!!.forEach { personNames.add(it.stage_name) }
+//        Log.d("x", "person" + persons.toString())
+//
+//        var array : Array<String> = personNames.toTypedArray()
+//        Log.d("x", "arrya of persons " + personNames)
+//        if(!persons.isNullOrEmpty()){
+//            var adapter = ArrayAdapter(view.context, android.R.layout.simple_spinner_item, array)
+//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//            spinner.adapter = adapter
+//        }
 
         spinner.onItemSelectedListener=object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                Log.d("x", "selected person " +persons[p2] )
+                Log.d("x", "selected person " )
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {

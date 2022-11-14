@@ -300,6 +300,12 @@ class ListFragment : Fragment() {
                             Log.d("x", "field: " + searchItems[i] + " parameter: " + toSearch)
 
                             when (searchItems[i].trim()) {
+                                "genre" -> {
+                                    var string = " genre like '%"+searchItems[nextIndex]+"%'"
+                                    queryList.add(string)
+                                    //rawQuery += " genre LIKE " + searchItems[nextIndex]
+                                    break
+                                }
                                 "album" -> {
                                     Log.d("x", "inside album case with " + searchItems[i])
                                     var albumId = 0
@@ -341,33 +347,33 @@ class ListFragment : Fragment() {
                                         message+="\nArtist not found"
                                     queryList.add( "id_performer = " + performerId )
                                 }
-                                "genre" -> {
-                                    var string = " genre like '%"+searchItems[nextIndex]+"%'"
-                                    queryList.add(string)
-                                    //rawQuery += " genre LIKE " + searchItems[nextIndex]
-                                }
-                                "type" -> {
-                                    var type = 2
-                                    when(searchItems[nextIndex].lowercase()){
-                                        "unknown"->{
-                                            type = 2
-                                        }
-                                        "person"->{
-                                            type = 0
-                                        }
-                                        "group"->{
-                                            type= 1
-                                        }
-                                        else->{
-                                            message+="Invalid type"
-                                        }
-                                    }
-                                    var string = " "
-                                    queryList.add(string)
-                                    //rawQuery += " type"
-                                }
+//                                "type" -> {
+//                                    var type = 2
+//                                    when(searchItems[nextIndex].lowercase()){
+//                                        "unknown"->{
+//                                            type = 2
+//                                        }
+//                                        "person"->{
+//                                            type = 0
+//                                        }
+//                                        "group"->{
+//                                            type= 1
+//                                        }
+//                                        else->{
+//                                            message+="Invalid type"
+//                                        }
+//                                    }
+//                                    var string = " "
+//                                    queryList.add(string)
+//                                    //rawQuery += " type"
+//                                }
                                 "year"->{
+                                    try{
+                                        queryList.add(" year = " + searchItems[nextIndex].toInt())
 
+                                    }catch (e : Exception){
+                                        message += "Invalid year"
+                                    }
                                 }
                                 else -> {
                                     Toast.makeText(
